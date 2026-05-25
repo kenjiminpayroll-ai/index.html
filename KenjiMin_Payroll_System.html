@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenji Min Payroll System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface2: #f5f5f4;
+  --surface3: #e7e5e4;
+  --border: #e2e0dd;
+  --border-strong: #d1cfc9;
+  --fire: #1e3a8a;
+  --fire-light: #eff6ff;
+  --fire-mid: #bfdbfe;
+  --fire-dark: #1e40af;
+  --ember: #f59e0b;
+  --ember-light: #fef9c3;
+  --text: #1c1917;
+  --text-2: #44403c;
+  --text-3: #78716c;
+  --text-4: #a8a29e;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --red: #dc2626;
+  --red-light: #fff1f2;
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --r: 10px;
+  --r-lg: 14px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 12px rgba(0,0,0,.07), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,.12), 0 8px 24px rgba(0,0,0,.06);
+  --hf: 'Plus Jakarta Sans', sans-serif;
+  --mf: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--hf);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+}
+
+body.auth-locked .sidebar,
+body.auth-locked .main { display: none; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.slogo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.slogo-row { display: flex; align-items: center; gap: 10px; }
+.slogo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--fire), var(--fire-dark));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 10px rgba(30,58,138,.25);
+  flex-shrink: 0;
+}
+.slogo-text { flex: 1; }
+.slogo-t { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--text); }
+.slogo-s { font-size: 11px; color: var(--text-3); font-family: var(--mf); margin-top: 1px; }
+
+.snav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+.nl {
+  font-size: 10px;
+  font-family: var(--mf);
+  color: var(--text-4);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin: 18px 0 6px;
+  font-weight: 600;
+}
+.nl:first-child { margin-top: 0; }
+
+.ni {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: all .15s;
+  margin-bottom: 2px;
+  user-select: none;
+}
+.ni:hover { background: var(--surface2); color: var(--text); }
+.ni.active { background: var(--fire-light); color: var(--fire); font-weight: 600; }
+.ni.active .ico { filter: none; }
+.ni .ico { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+
+.sfooter {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-4);
+  font-family: var(--mf);
+  line-height: 1.5;
+}
+
+/* ── MAIN ── */
+.main { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+.topbar {
+  background: rgba(255,255,255,.95);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(12px);
+}
+.topbar-t { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+
+.content { padding: 28px; flex: 1; max-width: 1280px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-3);
+  margin-bottom: 16px;
+  font-family: var(--mf);
+}
+
+/* ── STAT CARDS ── */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.sc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s, transform .2s;
+}
+.sc:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.sc::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; border-radius: 0 0 var(--r-lg) var(--r-lg); }
+.sc.o::after { background: linear-gradient(90deg, var(--fire), var(--ember)); }
+.sc.y::after { background: linear-gradient(90deg, var(--ember), #f59e0b); }
+.sc.g::after { background: linear-gradient(90deg, var(--green), #22c55e); }
+.sc.b::after { background: linear-gradient(90deg, var(--blue), #60a5fa); }
+.sc-l { font-size: 12px; color: var(--text-3); font-weight: 500; margin-bottom: 8px; }
+.sc-v { font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-bottom: 5px; }
+.sc.o .sc-v { color: var(--fire); }
+.sc.y .sc-v { color: var(--ember); }
+.sc.g .sc-v { color: var(--green); }
+.sc.b .sc-v { color: var(--blue); }
+.sc-s { font-size: 12px; color: var(--text-4); }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--hf);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+  line-height: 1;
+}
+.bp { background: var(--fire); color: #fff; box-shadow: 0 2px 8px rgba(30,58,138,.25); }
+.bp:hover { background: var(--fire-dark); box-shadow: 0 4px 12px rgba(30,58,138,.3); transform: translateY(-1px); }
+.bg { background: var(--surface2); color: var(--text-2); border: 1px solid var(--border); }
+.bg:hover { background: var(--surface3); color: var(--text); }
+.bd2 { background: var(--red-light); color: var(--red); border: 1px solid rgba(220,38,38,.2); }
+.bd2:hover { background: rgba(220,38,38,.12); }
+.bsm { padding: 6px 12px; font-size: 12px; }
+.bxs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-family: var(--mf);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-3);
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface2);
+}
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:hover { background: var(--fire-light); }
+tbody tr:last-child { border-bottom: none; }
+tbody td { padding: 12px 14px; vertical-align: middle; }
+.num { font-family: var(--mf); font-size: 13px; }
+
+/* ── FORM ── */
+.fg { display: flex; flex-direction: column; gap: 6px; }
+label {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+input, select, textarea {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--hf);
+  font-size: 13px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--fire);
+  box-shadow: 0 0 0 3px rgba(30,58,138,.1);
+}
+select option { background: var(--surface); }
+input[type=number] { -moz-appearance: textfield; font-family: var(--mf); }
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.computed {
+  background: var(--ember-light) !important;
+  border-color: rgba(217,119,6,.25) !important;
+  color: var(--ember) !important;
+  font-family: var(--mf) !important;
+  font-weight: 600 !important;
+}
+
+/* ── MODAL ── */
+.mo {
+  position: fixed; inset: 0;
+  background: rgba(28,25,23,.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.mo.open { opacity: 1; pointer-events: all; }
+.md {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  width: 540px;
+  max-width: 96vw;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform .2s;
+  box-shadow: var(--shadow-lg);
+}
+.md.lg { width: 900px; }
+.mo.open .md { transform: translateY(0); }
+.mh {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: var(--surface);
+  z-index: 5;
+}
+.mt { font-size: 16px; font-weight: 700; color: var(--text); }
+.mc {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.mc:hover { background: var(--surface3); color: var(--text); }
+.mb { padding: 24px; }
+.mf2 {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+  position: sticky; bottom: 0;
+  background: var(--surface);
+}
+
+/* ── PILLS / BADGES ── */
+.badge {
+  background: var(--fire-light);
+  color: var(--fire);
+  font-size: 12px;
+  font-family: var(--mf);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--fire-mid);
+  font-weight: 500;
+}
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+.pa { background: var(--green-light); color: var(--green); border: 1px solid rgba(22,163,74,.2); }
+.pi { background: var(--red-light); color: var(--red); border: 1px solid rgba(220,38,38,.2); }
+
+/* ── PAGE HEADER ── */
+.ph { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.pt { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.ps2 { font-size: 13px; color: var(--text-3); margin-top: 3px; }
+
+/* ── PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── SEARCH ── */
+.sb { position: relative; }
+.sb input { padding-left: 34px; width: 220px; }
+.sb .si { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-4); font-size: 14px; pointer-events: none; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 48px 20px; color: var(--text-3); }
+.ei { font-size: 36px; margin-bottom: 12px; }
+.et { font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; }
+.es { font-size: 13px; }
+
+/* ── TOAST ── */
+.toast-c { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  animation: slideIn .25s ease;
+  min-width: 240px;
+  box-shadow: var(--shadow);
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ── PAYROLL ENTRY ROW ── */
+.br {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.br:last-child { border-bottom: none; }
+.br .lbl { color: var(--text-2); font-weight: 500; }
+.br .amt { font-family: var(--mf); font-weight: 600; }
+.br .amt.n { color: var(--red); }
+.br .amt.p { color: var(--green); }
+.br.tr { font-weight: 700; font-size: 15px; border-top: 2px solid var(--border); margin-top: 4px; padding-top: 10px; }
+
+/* ── GRIDS ── */
+.fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.fg4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.full { grid-column: 1 / -1; }
+
+/* ── SECTION HEADERS ── */
+.sec-hd {
+  font-size: 11px;
+  font-family: var(--mf);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--fire);
+  margin: 18px 0 10px;
+  font-weight: 700;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-hd::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── DEPT HEADER ── */
+.dept-hd {
+  background: linear-gradient(90deg, var(--fire-light), transparent);
+  border-left: 3px solid var(--fire);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--fire);
+  margin: 14px 0 6px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+.tab {
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .15s;
+  border-radius: 8px 8px 0 0;
+  user-select: none;
+}
+.tab:hover { color: var(--text-2); background: var(--surface2); }
+.tab.active { color: var(--fire); border-bottom-color: var(--fire); background: var(--fire-light); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── SUMMARY BOX ── */
+.sumbox {
+  background: linear-gradient(135deg, #1c1917, #292524);
+  border-radius: 12px;
+  padding: 18px 20px;
+  color: #fff;
+}
+.sum-item-label { font-size: 10px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; font-family: var(--mf); font-weight: 600; }
+.sum-item-val { font-size: 16px; font-weight: 700; font-family: var(--mf); }
+
+/* ── LOGIN ── */
+.login-screen {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #eff6ff, #fff, #e0f2fe);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px; z-index: 5000;
+}
+body.auth-locked .login-screen { display: flex; }
+.login-card {
+  width: 440px; max-width: 100%;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
+}
+.login-mark {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--fire), var(--fire-dark));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 20px rgba(30,58,138,.3);
+}
+.login-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.02em; }
+.login-sub { font-size: 13px; color: var(--text-3); margin-bottom: 24px; line-height: 1.6; }
+.login-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.login-tab {
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-2);
+  border-radius: 10px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+.login-tab.active {
+  background: var(--fire);
+  border-color: var(--fire);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(30,58,138,.25);
+}
+.login-error {
+  display: none;
+  background: #fff1f2;
+  border: 1.5px solid rgba(220,38,38,.3);
+  color: var(--red);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.user-chip {
+  font-size: 12px;
+  font-family: var(--mf);
+  color: var(--text-2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-weight: 500;
+}
+.secure-note { font-size: 11px; color: var(--text-4); line-height: 1.6; margin-top: 12px; }
+
+/* ── SETTINGS ── */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.settings-list { display: flex; flex-direction: column; gap: 10px; max-height: 440px; overflow: auto; padding-right: 4px; }
+.account-row {
+  display: grid; grid-template-columns: 1fr 160px auto; gap: 10px; align-items: end;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 12px;
+  transition: border-color .15s;
+}
+.account-row:hover { border-color: var(--border-strong); }
+
+/* ── PAYSLIP ── */
+.ps-wrap {
+  background: #fff;
+  color: #1c1917;
+  border-radius: 12px;
+  padding: 32px 36px;
+  max-width: 680px;
+  margin: 0 auto;
+  font-family: var(--hf);
+  border: 1px solid #e2e0dd;
+}
+.ps-header-band {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+  margin: -32px -36px 24px;
+  padding: 24px 36px;
+  border-radius: 12px 12px 0 0;
+  color: #fff;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.ps-co { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.ps-addr { font-size: 11px; opacity: .8; margin-top: 3px; }
+.ps-period-l { font-size: 10px; opacity: .7; text-transform: uppercase; letter-spacing: .1em; }
+.ps-period-v { font-size: 16px; font-weight: 700; margin-top: 2px; }
+.ps-gen { font-size: 10px; opacity: .6; margin-top: 4px; }
+.ps-info-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.ps-info-i label { display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; font-weight: 600; }
+.ps-info-i span { font-size: 13px; font-weight: 600; }
+.ps-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--fire);
+  font-weight: 700;
+  margin: 16px 0 10px;
+  font-family: var(--mf);
+  display: flex; align-items: center; gap: 8px;
+}
+.ps-section-title::after { content: ''; flex: 1; height: 1px; background: #e2e0dd; }
+.ps-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #f5f5f4;
+}
+.ps-row:last-child { border-bottom: none; }
+.ps-row .ps-label { color: #44403c; }
+.ps-row .ps-amount { font-family: var(--mf); font-weight: 600; }
+.ps-subtotal {
+  display: flex; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+.ps-net {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--fire), var(--fire-dark));
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  margin-top: 14px;
+  box-shadow: 0 4px 14px rgba(30,58,138,.25);
+}
+.ps-sig { display: flex; justify-content: space-between; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
+.ps-sig-l { border-top: 2px solid var(--border-strong); padding-top: 7px; font-size: 11px; color: var(--text-4); width: 150px; text-align: center; }
+
+/* ── ROW PAIR ── */
+.row-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-bottom: 8px; }
+.row-pair label { font-size: 9px; }
+
+/* ── PRINT ── */
+@media print {
+  body { background: #fff; }
+  .sidebar, .topbar, .ph, .btn, .toast-c, .mo { display: none !important; }
+  .main { margin-left: 0; }
+  .content { padding: 0; }
+}
+</style>
+</head>
+<body class="auth-locked">
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-mark">🎌</div>
+    <div class="login-title">Kenji Min Payroll</div>
+    <div class="login-sub">Sign in to continue to Kenji Min Japanese Training Center payroll system.</div>
+    <div class="login-tabs">
+      <button class="login-tab active" id="login-admin-tab" type="button" onclick="setLoginMode('admin')">👔 Admin</button>
+      <button class="login-tab" id="login-employee-tab" type="button" onclick="setLoginMode('employee')">👤 Employee</button>
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="fg"><label id="login-user-label">Admin Username</label><input type="text" id="login-user" placeholder="" autocomplete="username"></div>
+      <div class="fg"><label>Password</label><input type="password" id="login-pass" placeholder="" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
+      <button class="btn bp" onclick="login()" style="width:100%;justify-content:center;padding:12px">Sign In →</button>
+      <div class="secure-note">⚠️ Offline local storage: accounts are saved in this browser only. Use a backend for stronger security.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="slogo">
+    <div class="slogo-row">
+      <div class="slogo-icon">🎌</div>
+      <div class="slogo-text">
+        <div class="slogo-t">KENJI MIN</div>
+        <div class="slogo-s">Payroll System</div>
+      </div>
+    </div>
+  </div>
+  <nav class="snav">
+    <div class="nl">Overview</div>
+    <div class="ni active" onclick="nav('dashboard')"><span class="ico">▦</span> Dashboard</div>
+    <div class="nl">Management</div>
+    <div class="ni" onclick="nav('employees')"><span class="ico">👤</span> Employees</div>
+    <div class="ni" onclick="nav('dtr')"><span class="ico">🕐</span> DTR</div>
+    <div class="ni" onclick="nav('payroll')"><span class="ico">💰</span> Run Payroll</div>
+    <div class="ni" onclick="nav('payslips')"><span class="ico">🧾</span> Payslips</div>
+    <div class="nl">Reports</div>
+    <div class="ni" onclick="nav('reports')"><span class="ico">📊</span> Summary</div>
+    <div class="nl admin-only">Security</div>
+    <div class="ni admin-only" onclick="nav('settings')"><span class="ico">⚙</span> Settings</div>
+  </nav>
+  <div class="sfooter" id="company-footer">KENJI MIN JAPANESE TRAINING CENTER INC.<br>Dasmariñas, Cavite</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-t" id="topbar-t">Dashboard</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="user-chip" id="user-chip">Not signed in</span>
+      <span class="badge" id="period-b">Loading...</span>
+      <button class="btn bg bsm" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats" id="stats-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Recent Payroll Runs</div>
+          <div id="dash-recent"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Employee Roster</div>
+          <div id="dash-emp"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEES -->
+    <div class="page" id="page-employees">
+      <div class="ph">
+        <div>
+          <div class="pt">Employees</div>
+          <div class="ps2">Kenji Min Japanese Training Center staff roster</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="sb"><span class="si">🔍</span><input type="text" id="emp-q" placeholder="Search name, position..." oninput="renderEmpTable()"></div>
+          <button class="btn bp" onclick="openEmpModal()">+ Add Employee</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0">
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Position</th>
+                <th>Dept</th>
+                <th>Daily Rate</th>
+                <th>Transpo Allow.</th>
+                <th>SSS No.</th>
+                <th>PhilHealth No.</th>
+                <th>HDMF No.</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="emp-tbody"></tbody>
+          </table>
+          <div id="emp-empty" class="empty" style="display:none">
+            <div class="ei">👤</div>
+            <div class="et">No employees yet</div>
+            <div class="es">Add your first employee to get started</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- DTR -->
+    <div class="page" id="page-dtr">
+      <div class="ph">
+        <div>
+          <div class="pt">Daily Time Records</div>
+          <div class="ps2">Import DTR data and compute hours for payroll</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn bg bsm" onclick="document.getElementById('dtr-file-input').click()">&#128194; Import DTR (.xlsx)</button>
+          <input type="file" id="dtr-file-input" accept=".xlsx" style="display:none" onchange="importDTR(this)">
+          <button class="btn bp" id="dtr-send-payroll-btn" onclick="sendDTRToPayroll()" style="display:none">&#9889; Send to Run Payroll</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="card">
+          <div class="card-title">DTR Period &amp; Settings</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg"><label>Period Name</label><input type="text" id="dtr-period-name" placeholder="e.g. May 1-15, 2026"></div>
+            <div class="fg"><label>Date From</label><input type="date" id="dtr-from"></div>
+            <div class="fg"><label>Date To</label><input type="date" id="dtr-to"></div>
+            <div class="fg"><label>Standard Shift Start</label><input type="time" id="dtr-shift-start" value="09:00"></div>
+            <div class="fg"><label>Standard Hours / Day</label><input type="number" id="dtr-std-hours" value="8" min="1" max="12" step="0.5"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Import Guide</div>
+          <div style="font-size:13px;color:var(--text-2);line-height:2">
+            <div>&#128203; <strong>Format:</strong> Attendance Record Report (.xlsx) from biometric system</div>
+            <div>&#128290; <strong>Punches:</strong> Up to 4 per day (in, break-out, break-in, out)</div>
+            <div>&#9200; <strong>Auto-computed:</strong> Regular hours and late minutes</div>
+            <div>&#128279; <strong>Connected:</strong> Matched employees auto-fill in Run Payroll</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="dtr-summary-card" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div class="card-title" style="margin:0">Computed DTR Summary</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="sb"><span class="si">&#128269;</span><input type="text" id="dtr-q" placeholder="Search employee..." oninput="renderDTRTable()"></div>
+            <span id="dtr-period-badge" class="badge"></span>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th><th>Matched</th><th>Days Present</th>
+                <th>Reg. Hours</th><th>Late (min)</th><th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="dtr-tbody"></tbody>
+          </table>
+        </div>
+        <div id="dtr-unmatched-warn" style="display:none;margin-top:14px;padding:12px 16px;background:var(--ember-light);border:1px solid rgba(217,119,6,.3);border-radius:8px;font-size:13px;color:var(--ember)"></div>
+      </div>
+
+      <div id="dtr-empty" class="card">
+        <div class="empty">
+          <div class="ei">&#128336;</div>
+          <div class="et">No DTR data loaded</div>
+          <div class="es">Import a DTR .xlsx file to compute attendance hours</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DTR DETAIL MODAL -->
+    <div class="mo" id="dtr-detail-modal">
+      <div class="md" style="width:700px;max-width:96vw">
+        <div class="mh">
+          <div class="mt" id="dtr-detail-title">Daily Breakdown</div>
+          <button class="mc" onclick="document.getElementById('dtr-detail-modal').classList.remove('open')">&#10005;</button>
+        </div>
+        <div class="mb" id="dtr-detail-body"></div>
+      </div>
+    </div>
+
+
+    <!-- RUN PAYROLL -->
+    <div class="page" id="page-payroll">
+      <div class="ph">
+        <div>
+          <div class="pt">Run Payroll</div>
+          <div class="ps2">Compute and generate payroll for a pay period</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:290px 1fr;gap:16px;align-items:start">
+        <div class="card">
+          <div class="card-title">Pay Period</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="fg"><label>Period Name</label><input type="text" id="pr-name" placeholder="e.g. Apr 1-30, 2026"></div>
+            <div class="fg"><label>Date From</label><input type="date" id="pr-from"></div>
+            <div class="fg"><label>Date To</label><input type="date" id="pr-to"></div>
+            <div class="fg">
+              <label>Pay Type</label>
+              <select id="pr-type">
+                <option value="monthly">Monthly (Full Month)</option>
+                <option value="semi1">Semi-Monthly 1st (1–15)</option>
+                <option value="semi2">Semi-Monthly 2nd (16–end)</option>
+              </select>
+            </div>
+            <button class="btn bp" onclick="loadPayrollSheet()" style="width:100%;justify-content:center">⚡ Load Employees</button>
+          </div>
+        </div>
+        <div class="card" id="payroll-panel">
+          <div class="empty">
+            <div class="ei">💡</div>
+            <div class="et">Set period and load employees</div>
+            <div class="es">Configure the pay period on the left to begin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYSLIPS -->
+    <div class="page" id="page-payslips">
+      <div class="ph">
+        <div>
+          <div class="pt">Payslips</div>
+          <div class="ps2">View and print employee payslips</div>
+        </div>
+        <div class="sb"><span class="si">🔍</span><input type="text" id="slip-q" placeholder="Search by name or period..." oninput="renderSlipList()"></div>
+      </div>
+      <div class="card" style="padding:0">
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Pay Period</th>
+                <th>Basic Pay</th>
+                <th>OT / Premium</th>
+                <th>Allowances</th>
+                <th>Gross Pay</th>
+                <th>Deductions</th>
+                <th>Net Pay</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="slip-tbody"></tbody>
+          </table>
+          <div id="slip-empty" class="empty" style="display:none">
+            <div class="ei">🧾</div>
+            <div class="et">No payslips yet</div>
+            <div class="es">Run payroll to generate payslips</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="ph">
+        <div>
+          <div class="pt">Summary Report</div>
+          <div class="ps2">Payroll cost breakdown by period</div>
+        </div>
+      </div>
+      <div id="reports-content"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="ph">
+        <div>
+          <div class="pt">Admin Settings</div>
+          <div class="ps2">Company details and employee login accounts</div>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-title">Company Information</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="fg"><label>Company Name</label><input type="text" id="set-company"></div>
+            <div class="fg"><label>Address</label><textarea id="set-address" rows="3"></textarea></div>
+            <div class="fg"><label>Footer Location</label><input type="text" id="set-footer"></div>
+            <button class="btn bp" onclick="saveCompanySettings()">💾 Save Company Settings</button>
+          </div>
+          <div class="secure-note" style="margin-top:12px">These values update the sidebar footer and printed payslip header.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Admin Password</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="fg"><label>New Admin Password</label><input type="password" id="set-admin-pass" placeholder="Leave blank to keep current"></div>
+            <button class="btn bp" onclick="saveAdminPassword()">🔐 Update Password</button>
+          </div>
+          <div class="secure-note" style="margin-top:12px">Change the default admin password after your first login.</div>
+        </div>
+        <div class="card full">
+          <div class="card-title">Employee Login Passwords</div>
+          <div class="settings-list" id="employee-account-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EMPLOYEE MODAL -->
+<div class="mo" id="emp-modal">
+  <div class="md">
+    <div class="mh">
+      <div class="mt" id="em-title">Add Employee</div>
+      <button class="mc" onclick="closeEmpModal()">✕</button>
+    </div>
+    <div class="mb">
+      <div class="fg2" style="gap:16px">
+        <div class="fg full"><label>Full Name (Last, First MI.)</label><input type="text" id="f-name" placeholder="SANTOS, JUAN"></div>
+        <div class="fg"><label>Position</label><input type="text" id="f-pos" placeholder="INSTRUCTOR"></div>
+        <div class="fg"><label>Department</label>
+          <select id="f-dept"><option>INSTRUCTOR</option><option>PRINCIPAL</option><option>OFFICER IN CHARGE</option><option>DRIVER</option><option>HEAD ADMINISTRATOR</option><option>ACCOUNTING OFFICER</option><option>OTHERS</option></select>
+        </div>
+        <div class="fg"><label>Date Hired</label><input type="text" id="f-hired" placeholder="Nov 29, 2024"></div>
+        <div class="fg"><label>Status</label><select id="f-stat"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <div class="fg"><label>Daily Rate (₱)</label><input type="number" id="f-rate" placeholder="900" min="0"></div>
+        <div class="fg"><label>Transpo Allowance / Month (₱)</label><input type="number" id="f-transpo" placeholder="100" min="0"></div>
+        <div class="fg"><label>Deployed To</label><input type="text" id="f-deploy" placeholder="KENJI MIN" value="KENJI MIN"></div>
+        <div class="fg"><label>SSS No.</label><input type="text" id="f-sss" placeholder="35-0693777-1"></div>
+        <div class="fg"><label>PhilHealth No.</label><input type="text" id="f-ph" placeholder="08-2551859113-1"></div>
+        <div class="fg"><label>Pag-IBIG (HDMF) No.</label><input type="text" id="f-hd" placeholder="1212-1336-6055"></div>
+        <div class="fg"><label>TIN No.</label><input type="text" id="f-tin" placeholder="—"></div>
+        <div class="fg"><label>Employee ID / No.</label><input type="text" id="f-eid" placeholder="—"></div>
+      </div>
+    </div>
+    <div class="mf2">
+      <button class="btn bg" onclick="closeEmpModal()">Cancel</button>
+      <button class="btn bp" onclick="saveEmp()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYROLL ENTRY MODAL -->
+<div class="mo" id="pr-modal">
+  <div class="md lg">
+    <div class="mh">
+      <div class="mt" id="pr-modal-title">Enter Hours — Employee</div>
+      <button class="mc" onclick="closePrModal()">✕</button>
+    </div>
+    <div class="mb">
+      <!-- Live Summary Bar -->
+      <div class="sumbox" style="margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;text-align:center">
+          <div>
+            <div class="sum-item-label">Basic Pay</div>
+            <div class="sum-item-val" id="s-basic" style="color:#fb923c">₱0.00</div>
+          </div>
+          <div>
+            <div class="sum-item-label">OT / Premium</div>
+            <div class="sum-item-val" id="s-ot" style="color:#60a5fa">₱0.00</div>
+          </div>
+          <div>
+            <div class="sum-item-label">Allowances</div>
+            <div class="sum-item-val" id="s-allow" style="color:#4ade80">₱0.00</div>
+          </div>
+          <div>
+            <div class="sum-item-label">Deductions</div>
+            <div class="sum-item-val" id="s-ded" style="color:#f87171">₱0.00</div>
+          </div>
+          <div>
+            <div class="sum-item-label">Net Pay</div>
+            <div class="sum-item-val" id="s-net" style="color:#fff;font-size:20px">₱0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this,'t-basic')">📋 Basic Hours</div>
+        <div class="tab" onclick="switchTab(this,'t-premium')">⏰ Overtime</div>
+        <div class="tab" onclick="switchTab(this,'t-holiday')">📅 Holiday Pay</div>
+        <div class="tab" onclick="switchTab(this,'t-allow')">💳 Allowances</div>
+        <div class="tab" onclick="switchTab(this,'t-deduct')">➖ Deductions</div>
+      </div>
+
+      <!-- BASIC -->
+      <div class="tab-pane active" id="t-basic">
+        <div class="sec-hd">Regular Hours</div>
+        <div class="fg3">
+          <div class="fg"><label>Total Reg. Hours Worked</label><input type="number" id="p-rh" placeholder="e.g. 200" min="0" step="0.01" oninput="calcLive()"></div>
+          <div class="fg"><label>Days Worked (auto: hrs ÷ 8)</label><input type="number" id="p-days" class="computed" readonly></div>
+          <div class="fg"><label>Regular Pay (₱)</label><input type="number" id="p-rpay" class="computed" readonly></div>
+        </div>
+        <div class="sec-hd">Late / Absent Deduction</div>
+        <div class="fg3">
+          <div class="fg"><label>Late / Absent (minutes)</label><input type="number" id="p-late" placeholder="0" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>Late Deduction (₱)</label><input type="number" id="p-late-ded" class="computed" readonly></div>
+          <div class="fg"><label>Total Basic Pay (₱)</label><input type="number" id="p-basic" class="computed" readonly></div>
+        </div>
+        <div class="sec-hd">Previous Period (for monthly payroll)</div>
+        <div class="fg2">
+          <div class="fg"><label>Gross Pay — 1st Period (₱)</label><input type="number" id="p-prev" placeholder="0" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>Total Gross (Current + Previous)</label><input type="number" id="p-tgross" class="computed" readonly></div>
+        </div>
+      </div>
+
+      <!-- OT & PREMIUM -->
+      <div class="tab-pane" id="t-premium">
+        <div class="sec-hd">Overtime</div>
+        <div class="fg4">
+          <div class="fg"><label>OT Hours</label><input type="number" id="p-ot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>OT Amount (×1.25)</label><input type="number" class="computed" id="p-ot-a" readonly></div>
+          <div></div><div></div>
+        </div>
+        <div class="sec-hd">Rest Day Premium</div>
+        <div class="fg4">
+          <div class="fg"><label>RD Hours</label><input type="number" id="p-rd" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>RD Amount (×1.30)</label><input type="number" class="computed" id="p-rd-a" readonly></div>
+          <div class="fg"><label>RD OT Hours</label><input type="number" id="p-rdot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>RD OT Amount (×1.69)</label><input type="number" class="computed" id="p-rdot-a" readonly></div>
+        </div>
+      </div>
+
+      <!-- HOLIDAYS -->
+      <div class="tab-pane" id="t-holiday">
+        <div class="sec-hd">Legal Holiday (200%)</div>
+        <div class="fg4">
+          <div class="fg"><label>LH Hours</label><input type="number" id="p-lh" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>LH Amount (×1.0 addl)</label><input type="number" class="computed" id="p-lh-a" readonly></div>
+          <div class="fg"><label>LH OT Hours</label><input type="number" id="p-lhot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>LH OT Amount (×2.6)</label><input type="number" class="computed" id="p-lhot-a" readonly></div>
+        </div>
+
+        <div class="fg4">
+          <div class="fg"><label>LH RD Hours</label><input type="number" id="p-lhrd" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>LH RD Amount (×2.6)</label><input type="number" class="computed" id="p-lhrd-a" readonly></div>
+          <div class="fg"><label>LH RD OT Hours</label><input type="number" id="p-lhrdot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>LH RD OT Amount (×3.38)</label><input type="number" class="computed" id="p-lhrdot-a" readonly></div>
+        </div>
+
+        <div class="sec-hd">Special Holiday (130%)</div>
+        <div class="fg4">
+          <div class="fg"><label>SH Hours</label><input type="number" id="p-sh" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>SH Amount (×1.30)</label><input type="number" class="computed" id="p-sh-a" readonly></div>
+          <div class="fg"><label>SH OT Hours</label><input type="number" id="p-shot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>SH OT Amount (×1.69)</label><input type="number" class="computed" id="p-shot-a" readonly></div>
+        </div>
+
+        <div class="fg4">
+          <div class="fg"><label>SH RD Hours</label><input type="number" id="p-shrd" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>SH RD Amount (×1.50)</label><input type="number" class="computed" id="p-shrd-a" readonly></div>
+          <div class="fg"><label>SH RD OT Hours</label><input type="number" id="p-shrdot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>SH RD OT Amount (×1.95)</label><input type="number" class="computed" id="p-shrdot-a" readonly></div>
+        </div>
+
+        <div class="sec-hd">Double Holiday (300%)</div>
+        <div class="fg4">
+          <div class="fg"><label>DH Hours</label><input type="number" id="p-dh" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>DH Amount (×3.0)</label><input type="number" class="computed" id="p-dh-a" readonly></div>
+          <div class="fg"><label>DH OT Hours</label><input type="number" id="p-dhot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>DH OT Amount (×3.9)</label><input type="number" class="computed" id="p-dhot-a" readonly></div>
+        </div>
+
+        <div class="fg4">
+          <div class="fg"><label>DH RD Hours</label><input type="number" id="p-dhrd" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>DH RD Amount (×3.9)</label><input type="number" class="computed" id="p-dhrd-a" readonly></div>
+          <div class="fg"><label>DH RD OT Hours</label><input type="number" id="p-dhrdot" placeholder="0" min="0" step=".01" oninput="calcLive()"></div>
+          <div class="fg"><label>DH RD OT Amount (×5.07)</label><input type="number" class="computed" id="p-dhrdot-a" readonly></div>
+        </div>
+
+      </div>
+
+      <!-- ALLOWANCES -->
+      <div class="tab-pane" id="t-allow">
+        <div class="sec-hd">Allowances</div>
+        <div class="fg2">
+          <div class="fg"><label>Transportation Allowance (₱)</label><input type="number" id="p-ta" placeholder="0" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>Adjustment / Others (₱)</label><input type="number" id="p-adj" placeholder="0" oninput="calcLive()"></div>
+        </div>
+        <div class="sec-hd">Gross Summary</div>
+        <div class="fg3">
+          <div class="fg"><label>Gross — This Period (₱)</label><input type="number" class="computed" id="p-gross-cur" readonly></div>
+          <div class="fg"><label>Gross — Previous Period (₱)</label><input type="number" class="computed" id="p-gross-prev" readonly></div>
+          <div class="fg"><label>Total Gross Pay (₱)</label><input type="number" class="computed" id="p-gross-tot" readonly></div>
+        </div>
+      </div>
+
+      <!-- DEDUCTIONS -->
+      <div class="tab-pane" id="t-deduct">
+        <div class="sec-hd">Mandatory Government Deductions</div>
+        <div class="fg4">
+          <div class="fg"><label>SSS Contribution (₱)</label><input type="number" id="p-sss" placeholder="400" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>PhilHealth / PHIC (₱)</label><input type="number" id="p-phic" placeholder="400" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>Pag-IBIG / HDMF (₱)</label><input type="number" id="p-hdmf" placeholder="250" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>SSS Loan (₱)</label><input type="number" id="p-sssloan" placeholder="0" min="0" oninput="calcLive()"></div>
+        </div>
+        <div class="fg3">
+          <div class="fg"><label>Other Deductions (₱)</label><input type="number" id="p-other-ded" placeholder="0" min="0" oninput="calcLive()"></div>
+          <div class="fg"><label>Total Deductions (₱)</label><input type="number" class="computed" id="p-tot-ded" readonly></div>
+          <div class="fg"><label>NET PAY (₱)</label><input type="number" class="computed" id="p-netpay" readonly style="color:var(--fire)!important;font-weight:800;font-size:15px!important"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mf2">
+      <button class="btn bg" onclick="closePrModal()">Cancel</button>
+      <button class="btn bp" onclick="savePrEntry()">✅ Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PAYSLIP MODAL -->
+<div class="mo" id="edit-slip-modal">
+  <div class="md lg">
+    <div class="mh">
+      <div>
+        <div class="mt" id="edit-slip-title">✏️ Edit Payslip</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px" id="edit-slip-sub">Admin edit mode — changes are saved back to the payslip record</div>
+      </div>
+      <button class="mc" onclick="closeEditSlip()">✕</button>
+    </div>
+    <div class="mb">
+      <!-- Employee Info Banner -->
+      <div style="background:linear-gradient(135deg,var(--fire-light),var(--ember-light));border:1px solid var(--fire-mid);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:15px;font-weight:800" id="es-emp-name">—</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:2px" id="es-emp-info">—</div>
+        </div>
+        <div style="text-align:right;min-width:220px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mf);margin-bottom:5px">Pay Period</div>
+          <input type="text" id="es-period" placeholder="e.g. May 1-31, 2026"
+            style="font-size:13px;font-weight:700;color:var(--fire);border-color:rgba(234,88,12,.35);background:rgba(255,255,255,.8);text-align:right;padding:7px 10px"
+            oninput="document.getElementById('edit-slip-sub').textContent='Admin edit mode · '+(this.value||'—')">
+        </div>
+      </div>
+
+      <!-- Live Summary Bar -->
+      <div class="sumbox" style="margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;text-align:center">
+          <div><div class="sum-item-label">Basic Pay</div><div class="sum-item-val" id="es-s-basic" style="color:#fb923c">₱0.00</div></div>
+          <div><div class="sum-item-label">OT / Premium</div><div class="sum-item-val" id="es-s-ot" style="color:#60a5fa">₱0.00</div></div>
+          <div><div class="sum-item-label">Allowances</div><div class="sum-item-val" id="es-s-allow" style="color:#4ade80">₱0.00</div></div>
+          <div><div class="sum-item-label">Deductions</div><div class="sum-item-val" id="es-s-ded" style="color:#f87171">₱0.00</div></div>
+          <div><div class="sum-item-label">Net Pay</div><div class="sum-item-val" id="es-s-net" style="color:#fff;font-size:20px">₱0.00</div></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this,'es-t-basic')">📋 Basic Hours</div>
+        <div class="tab" onclick="switchTab(this,'es-t-premium')">⏰ Overtime</div>
+        <div class="tab" onclick="switchTab(this,'es-t-holiday')">📅 Holiday Pay</div>
+        <div class="tab" onclick="switchTab(this,'es-t-allow')">💳 Allowances</div>
+        <div class="tab" onclick="switchTab(this,'es-t-deduct')">➖ Deductions</div>
+      </div>
+
+      <!-- BASIC -->
+      <div class="tab-pane active" id="es-t-basic">
+        <div class="sec-hd">Regular Hours</div>
+        <div class="fg3">
+          <div class="fg"><label>Total Reg. Hours Worked</label><input type="number" id="es-rh" placeholder="e.g. 200" min="0" step="0.01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Days Worked (auto: hrs ÷ 8)</label><input type="number" id="es-days" class="computed" readonly></div>
+          <div class="fg"><label>Regular Pay (₱)</label><input type="number" id="es-rpay" class="computed" readonly></div>
+        </div>
+        <div class="sec-hd">Late / Absent Deduction</div>
+        <div class="fg3">
+          <div class="fg"><label>Late / Absent (minutes)</label><input type="number" id="es-late" placeholder="0" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Late Deduction (₱)</label><input type="number" id="es-late-ded" class="computed" readonly></div>
+          <div class="fg"><label>Total Basic Pay (₱)</label><input type="number" id="es-basic" class="computed" readonly></div>
+        </div>
+        <div class="sec-hd">Previous Period</div>
+        <div class="fg2">
+          <div class="fg"><label>Gross Pay — 1st Period (₱)</label><input type="number" id="es-prev" placeholder="0" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Total Gross (Current + Previous)</label><input type="number" id="es-tgross" class="computed" readonly></div>
+        </div>
+      </div>
+
+      <!-- OT & PREMIUM -->
+      <div class="tab-pane" id="es-t-premium">
+        <div class="sec-hd">Overtime</div>
+        <div class="fg4">
+          <div class="fg"><label>OT Hours (×1.25)</label><input type="number" id="es-ot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>OT Amount (₱)</label><input type="number" class="computed" id="es-ot-a" readonly></div>
+          <div class="fg"><label>Rest Day Hours (×1.30)</label><input type="number" id="es-rd" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>RD Amount (₱)</label><input type="number" class="computed" id="es-rd-a" readonly></div>
+        </div>
+        <div class="fg4">
+          <div class="fg"><label>RD OT Hours (×1.69)</label><input type="number" id="es-rdot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>RD OT Amount (₱)</label><input type="number" class="computed" id="es-rdot-a" readonly></div>
+        </div>
+      </div>
+
+      <!-- HOLIDAY -->
+      <div class="tab-pane" id="es-t-holiday">
+        <div class="sec-hd">Legal Holiday</div>
+        <div class="fg4">
+          <div class="fg"><label>LH Hours (×1.0 addl)</label><input type="number" id="es-lh" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>LH Amount (₱)</label><input type="number" class="computed" id="es-lh-a" readonly></div>
+          <div class="fg"><label>LH OT Hours (×2.6)</label><input type="number" id="es-lhot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>LH OT Amount (₱)</label><input type="number" class="computed" id="es-lhot-a" readonly></div>
+        </div>
+        <div class="fg4">
+          <div class="fg"><label>LH RD Hours (×2.6)</label><input type="number" id="es-lhrd" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>LH RD Amount (₱)</label><input type="number" class="computed" id="es-lhrd-a" readonly></div>
+          <div class="fg"><label>LH RD OT Hours (×3.38)</label><input type="number" id="es-lhrdot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>LH RD OT Amount (₱)</label><input type="number" class="computed" id="es-lhrdot-a" readonly></div>
+        </div>
+        <div class="sec-hd">Special Holiday</div>
+        <div class="fg4">
+          <div class="fg"><label>SH Hours (×1.30)</label><input type="number" id="es-sh" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>SH Amount (₱)</label><input type="number" class="computed" id="es-sh-a" readonly></div>
+          <div class="fg"><label>SH OT Hours (×1.69)</label><input type="number" id="es-shot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>SH OT Amount (₱)</label><input type="number" class="computed" id="es-shot-a" readonly></div>
+        </div>
+        <div class="fg4">
+          <div class="fg"><label>SH RD Hours (×1.50)</label><input type="number" id="es-shrd" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>SH RD Amount (₱)</label><input type="number" class="computed" id="es-shrd-a" readonly></div>
+        </div>
+        <div class="sec-hd">Double Holiday</div>
+        <div class="fg4">
+          <div class="fg"><label>DH Hours (×3.0)</label><input type="number" id="es-dh" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>DH Amount (₱)</label><input type="number" class="computed" id="es-dh-a" readonly></div>
+          <div class="fg"><label>DH OT Hours (×3.9)</label><input type="number" id="es-dhot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>DH OT Amount (₱)</label><input type="number" class="computed" id="es-dhot-a" readonly></div>
+        </div>
+        <div class="fg4">
+          <div class="fg"><label>DH RD Hours (×3.9)</label><input type="number" id="es-dhrd" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>DH RD Amount (₱)</label><input type="number" class="computed" id="es-dhrd-a" readonly></div>
+          <div class="fg"><label>DH RD OT Hours (×5.07)</label><input type="number" id="es-dhrdot" placeholder="0" min="0" step=".01" oninput="calcEditLive()"></div>
+          <div class="fg"><label>DH RD OT Amount (₱)</label><input type="number" class="computed" id="es-dhrdot-a" readonly></div>
+        </div>
+      </div>
+
+      <!-- ALLOWANCES -->
+      <div class="tab-pane" id="es-t-allow">
+        <div class="sec-hd">Allowances</div>
+        <div class="fg2">
+          <div class="fg"><label>Transportation Allowance (₱)</label><input type="number" id="es-ta" placeholder="0" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Adjustment / Others (₱)</label><input type="number" id="es-adj" placeholder="0" oninput="calcEditLive()"></div>
+        </div>
+        <div class="sec-hd">Gross Summary</div>
+        <div class="fg3">
+          <div class="fg"><label>Gross — This Period (₱)</label><input type="number" class="computed" id="es-gross-cur" readonly></div>
+          <div class="fg"><label>Gross — Previous Period (₱)</label><input type="number" class="computed" id="es-gross-prev" readonly></div>
+          <div class="fg"><label>Total Gross Pay (₱)</label><input type="number" class="computed" id="es-gross-tot" readonly></div>
+        </div>
+      </div>
+
+      <!-- DEDUCTIONS -->
+      <div class="tab-pane" id="es-t-deduct">
+        <div class="sec-hd">Mandatory Government Deductions</div>
+        <div class="fg4">
+          <div class="fg"><label>SSS Contribution (₱)</label><input type="number" id="es-sss" placeholder="400" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>PhilHealth / PHIC (₱)</label><input type="number" id="es-phic" placeholder="400" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Pag-IBIG / HDMF (₱)</label><input type="number" id="es-hdmf" placeholder="250" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>SSS Loan (₱)</label><input type="number" id="es-sssloan" placeholder="0" min="0" oninput="calcEditLive()"></div>
+        </div>
+        <div class="fg3">
+          <div class="fg"><label>Other Deductions (₱)</label><input type="number" id="es-other-ded" placeholder="0" min="0" oninput="calcEditLive()"></div>
+          <div class="fg"><label>Total Deductions (₱)</label><input type="number" class="computed" id="es-tot-ded" readonly></div>
+          <div class="fg"><label>NET PAY (₱)</label><input type="number" class="computed" id="es-netpay" readonly style="color:var(--fire)!important;font-weight:800;font-size:15px!important"></div>
+        </div>
+        <div class="sec-hd">Admin Notes</div>
+        <div class="fg">
+          <label>Edit Reason / Notes (optional)</label>
+          <textarea id="es-notes" rows="2" placeholder="e.g. Corrected OT hours per timesheet review..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="mf2">
+      <button class="btn bg" onclick="closeEditSlip()">Cancel</button>
+      <button class="btn bp" onclick="saveEditSlip()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYSLIP VIEW MODAL -->
+<div class="mo" id="slip-modal">
+  <div class="md" style="width:720px;max-width:96vw">
+    <div class="mh">
+      <div class="mt">📄 Payslip</div>
+      <button class="mc" onclick="closeSlipModal()">✕</button>
+    </div>
+    <div class="mb" id="slip-modal-body"></div>
+    <div class="mf2">
+      <button class="btn bg" onclick="closeSlipModal()">Close</button>
+      <button class="btn bg" id="slip-modal-edit-btn" style="color:var(--blue);border-color:rgba(37,99,235,.3);background:var(--blue-light);display:none" onclick="switchToEditFromView()">✏️ Edit Payslip</button>
+      <button class="btn bp" onclick="window.print()">🖨 Print Payslip</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-c" id="toasts"></div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let employees = JSON.parse(localStorage.getItem('kjm_emp')||'[]');
+let payslips  = JSON.parse(localStorage.getItem('kjm_slips')||'[]');
+let auth = JSON.parse(localStorage.getItem('kjm_auth')||'null') || {adminPassword:'admin123',employeePasswords:{}};
+let appSettings = JSON.parse(localStorage.getItem('kjm_settings')||'null') || {companyName:'KENJI MIN JAPANESE TRAINING CENTER INC.',address:"Dasmariñas, Cavite",footer:'Dasmariñas, Cavite'};
+let currentUser = JSON.parse(sessionStorage.getItem('kjm_session')||'null');
+let loginMode = 'admin';
+let prEntries = {};
+let currentEmpId = null;
+let editEmpId = null;
+
+const R = (n,d=2) => Math.round(n*(10**d))/(10**d);
+const N = v => parseFloat(v)||0;
+const fmt = n => N(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function save(){
+  localStorage.setItem('kjm_emp',JSON.stringify(employees));
+  localStorage.setItem('kjm_slips',JSON.stringify(payslips));
+  localStorage.setItem('kjm_auth',JSON.stringify(auth));
+  localStorage.setItem('kjm_settings',JSON.stringify(appSettings));
+}
+
+function toast(msg, type='success'){
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span>${msg}`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+
+function employeeLoginId(emp){ return (emp.eid||emp.id||'').toString().trim(); }
+
+function syncEmployeeAccounts(){
+  auth.employeePasswords = auth.employeePasswords||{};
+  employees.forEach(emp=>{
+    const id = employeeLoginId(emp);
+    if(id && !auth.employeePasswords[id]) auth.employeePasswords[id] = id;
+  });
+  save();
+}
+
+function isAdmin(){ return currentUser && currentUser.role==='admin'; }
+function currentEmployee(){ return currentUser&&currentUser.role==='employee' ? employees.find(e=>String(e.id)===String(currentUser.empId)) : null; }
+
+function setLoginMode(mode){
+  loginMode = mode;
+  document.getElementById('login-admin-tab').classList.toggle('active', mode==='admin');
+  document.getElementById('login-employee-tab').classList.toggle('active', mode==='employee');
+  document.getElementById('login-user-label').textContent = mode==='admin' ? 'Admin Username' : 'Employee ID / No.';
+  document.getElementById('login-user').placeholder = mode==='admin' ? 'admin' : 'Employee ID';
+  document.getElementById('login-pass').placeholder = mode==='admin' ? 'admin123' : 'Employee password';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function showLoginError(msg){
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function login(){
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  syncEmployeeAccounts();
+  if(loginMode==='admin'){
+    if(user.toLowerCase()==='admin' && pass===auth.adminPassword){
+      currentUser = {role:'admin',name:'Admin'};
+      sessionStorage.setItem('kjm_session',JSON.stringify(currentUser));
+      startApp(); return;
+    }
+  } else {
+    const emp = employees.find(e=>employeeLoginId(e)===user);
+    if(emp && pass===auth.employeePasswords[employeeLoginId(emp)]){
+      currentUser = {role:'employee',empId:emp.id,name:emp.name};
+      sessionStorage.setItem('kjm_session',JSON.stringify(currentUser));
+      startApp(); return;
+    }
+  }
+  showLoginError('Invalid username or password. Please try again.');
+}
+
+function logout(){
+  currentUser = null;
+  sessionStorage.removeItem('kjm_session');
+  document.body.classList.add('auth-locked');
+  document.getElementById('login-pass').value = '';
+  document.getElementById('user-chip').textContent = 'Not signed in';
+}
+
+function applyCompanySettings(){ document.getElementById('company-footer').innerHTML = appSettings.companyName+'<br>'+appSettings.footer; }
+
+function applyRoleUI(){
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin()?'':'none');
+  document.querySelectorAll('.ni').forEach(el=>{
+    const slip = el.getAttribute('onclick')==="nav('payslips')";
+    el.style.display = (isAdmin()||slip) ? '' : 'none';
+  });
+  document.querySelectorAll('.nl').forEach(el=>el.style.display=isAdmin()?'':'none');
+  document.getElementById('user-chip').textContent = isAdmin() ? '👔 Admin' : ('👤 '+(currentUser?.name||'Employee'));
+}
+
+function startApp(){
+  document.body.classList.remove('auth-locked');
+  applyCompanySettings();
+  applyRoleUI();
+  nav(isAdmin()?'dashboard':'payslips');
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+const titles = {dashboard:'Dashboard',employees:'Employees',dtr:'DTR',payroll:'Run Payroll',payslips:'Payslips',reports:'Summary Report',settings:'Admin Settings'};
+
+function nav(page){
+  if(!currentUser){ document.body.classList.add('auth-locked'); return; }
+  if(!isAdmin() && page!=='payslips') page = 'payslips';
+  if(!isAdmin() && page==='dtr') page = 'payslips';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector(`.ni[onclick="nav('${page}')"]`).classList.add('active');
+  document.getElementById('topbar-t').textContent = titles[page];
+  if(page==='dashboard') renderDash();
+  if(page==='employees') renderEmpTable();
+  if(page==='dtr') renderDTRPage();
+  if(page==='payslips') renderSlipList();
+  if(page==='reports') renderReports();
+  if(page==='settings') renderSettings();
+}
+
+// Period badge
+(function(){
+  const n = new Date();
+  const m = n.toLocaleString('default',{month:'long'});
+  const y = n.getFullYear();
+  document.getElementById('period-b').textContent = `${m} ${y}`;
+})();
+
+// ─── PAY COMPUTATION ──────────────────────────────────────────────────────────
+function computePay(d, rate){
+  const hr = rate/8;
+  const rh=N(d.rh), late=N(d.late), prev=N(d.prev);
+  const days = R(rh/8);
+  const rpay = R(rate*days);
+  const lateDed = R(hr/60*late);
+  const basic = R(rpay-lateDed);
+
+  const ot=R(hr*1.25*N(d.ot));
+  const rd=R(hr*1.30*N(d.rd));
+  const rdot=R(hr*1.69*N(d.rdot));
+  const lh=R(hr*1.0*N(d.lh));
+  const lhot=R(hr*2.6*N(d.lhot));
+  const lhrd=R(hr*2.6*N(d.lhrd));
+  const lhrdot=R(hr*3.38*N(d.lhrdot));
+  const sh=R(hr*1.30*N(d.sh));
+  const shot=R(hr*1.69*N(d.shot));
+  const shrd=R(hr*1.50*N(d.shrd));
+  const shrdot=R(hr*1.95*N(d.shrdot));
+  const dh=R(hr*3.0*N(d.dh));
+  const dhot=R(hr*3.9*N(d.dhot));
+  const dhrd=R(hr*3.9*N(d.dhrd));
+  const dhrdot=R(hr*5.07*N(d.dhrdot));
+
+  const totalOT=R(ot+rd+rdot+lh+lhot+lhrd+lhrdot+sh+shot+shrd+shrdot+dh+dhot+dhrd+dhrdot);
+  const ta=N(d.ta), fa=N(d.fa), adj=N(d.adj);
+  const totalAllow=R(ta+fa+adj);
+  const grossCur=R(basic+totalOT+totalAllow);
+  const totalGross=R(grossCur+prev);
+  const sss=N(d.sss),phic=N(d.phic),hdmf=N(d.hdmf),sssloan=N(d.sssloan),otherDed=N(d.otherDed);
+  const totalDed=R(sss+phic+hdmf+sssloan+otherDed);
+  const netPay=R(totalGross-totalDed);
+
+  return {days,rpay,lateDed,basic,ot,rd,rdot,lh,lhot,lhrd,lhrdot,sh,shot,shrd,shrdot,dh,dhot,dhrd,dhrdot,totalOT,ta,fa,adj,totalAllow,grossCur,totalGross,sss,phic,hdmf,sssloan,otherDed,totalDed,netPay};
+}
+
+// ─── LIVE CALCULATION ─────────────────────────────────────────────────────────
+function getField(id){ return N(document.getElementById(id)?.value); }
+function setField(id,v){ const el=document.getElementById(id); if(el) el.value=v===0?'':R(v,2); }
+
+function calcLive(){
+  const emp = employees.find(e=>e.id===currentEmpId);
+  if(!emp) return;
+  const d={rh:getField('p-rh'),late:getField('p-late'),prev:getField('p-prev'),ot:getField('p-ot'),rd:getField('p-rd'),rdot:getField('p-rdot'),lh:getField('p-lh'),lhot:getField('p-lhot'),lhrd:getField('p-lhrd'),lhrdot:getField('p-lhrdot'),sh:getField('p-sh'),shot:getField('p-shot'),shrd:getField('p-shrd'),shrdot:getField('p-shrdot'),dh:getField('p-dh'),dhot:getField('p-dhot'),dhrd:getField('p-dhrd'),dhrdot:getField('p-dhrdot'),ta:getField('p-ta'),fa:0,adj:getField('p-adj'),sss:getField('p-sss'),phic:getField('p-phic'),hdmf:getField('p-hdmf'),sssloan:getField('p-sssloan'),otherDed:getField('p-other-ded')};
+  const c = computePay(d, N(emp.rate));
+  setField('p-days',c.days); setField('p-rpay',c.rpay); setField('p-late-ded',c.lateDed); setField('p-basic',c.basic);
+  setField('p-ot-a',c.ot);
+  setField('p-rd-a',c.rd); setField('p-rdot-a',c.rdot);
+  setField('p-lh-a',c.lh); setField('p-lhot-a',c.lhot);
+  setField('p-lhrd-a',c.lhrd); setField('p-lhrdot-a',c.lhrdot);
+  setField('p-sh-a',c.sh); setField('p-shot-a',c.shot);
+  setField('p-shrd-a',c.shrd); setField('p-shrdot-a',c.shrdot);
+  setField('p-dh-a',c.dh); setField('p-dhot-a',c.dhot);
+  setField('p-dhrd-a',c.dhrd); setField('p-dhrdot-a',c.dhrdot);
+  setField('p-gross-cur',c.grossCur); setField('p-gross-prev',N(d.prev)); setField('p-gross-tot',c.totalGross);
+  setField('p-tot-ded',c.totalDed); setField('p-tgross',c.totalGross); setField('p-netpay',c.netPay);
+  document.getElementById('s-basic').textContent = '₱'+fmt(c.basic);
+  document.getElementById('s-ot').textContent = '₱'+fmt(c.totalOT);
+  document.getElementById('s-allow').textContent = '₱'+fmt(c.totalAllow);
+  document.getElementById('s-ded').textContent = '₱'+fmt(c.totalDed);
+  document.getElementById('s-net').textContent = '₱'+fmt(c.netPay);
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(el, pane){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(pane).classList.add('active');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderDash(){
+  const active = employees.filter(e=>e.status==='active');
+  const totalNet = payslips.reduce((s,p)=>s+N(p.netPay),0);
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="sc o">
+      <div class="sc-l">Active Employees</div>
+      <div class="sc-v">${active.length}</div>
+      <div class="sc-s">${employees.length} total on roster</div>
+    </div>
+    <div class="sc y">
+      <div class="sc-l">Payslips Generated</div>
+      <div class="sc-v">${payslips.length}</div>
+      <div class="sc-s">All time</div>
+    </div>
+    <div class="sc g">
+      <div class="sc-l">Total Net Paid</div>
+      <div class="sc-v" style="font-size:20px">₱${fmt(totalNet)}</div>
+      <div class="sc-s">All payslips combined</div>
+    </div>
+    <div class="sc b">
+      <div class="sc-l">Departments</div>
+      <div class="sc-v">3</div>
+      <div class="sc-s">Instructor · Principal · Admin</div>
+    </div>`;
+
+  const recent = [...payslips].reverse().slice(0,6);
+  document.getElementById('dash-recent').innerHTML = recent.length
+    ? recent.map(s=>`<div class="br">
+        <div class="lbl">${s.empName} <span style="color:var(--text-4);font-size:11px;font-family:var(--mf)">· ${s.period}</span></div>
+        <div class="amt p">₱${fmt(s.netPay)}</div>
+      </div>`).join('')
+    : '<div class="empty"><div class="ei">📋</div><div class="es">No payroll runs yet</div></div>';
+
+  const roster = employees.slice(0,7);
+  document.getElementById('dash-emp').innerHTML = roster.length
+    ? roster.map(e=>`<div class="br">
+        <div>
+          <div style="font-size:13px;font-weight:600">${e.name}</div>
+          <div style="font-size:11px;color:var(--text-3);font-family:var(--mf)">${e.pos} · ₱${fmt(e.rate)}/day</div>
+        </div>
+        <span class="pill ${e.status==='active'?'pa':'pi'}">${e.status}</span>
+      </div>`).join('')
+    : '<div class="empty"><div class="ei">👤</div><div class="es">No employees yet</div></div>';
+}
+
+// ─── EMPLOYEES ────────────────────────────────────────────────────────────────
+function renderEmpTable(){
+  const q = (document.getElementById('emp-q')?.value||'').toLowerCase();
+  const fil = employees.filter(e=>`${e.name} ${e.pos} ${e.dept}`.toLowerCase().includes(q));
+  const tb = document.getElementById('emp-tbody');
+  const em = document.getElementById('emp-empty');
+  if(!fil.length){ tb.innerHTML=''; em.style.display=''; return; }
+  em.style.display = 'none';
+  tb.innerHTML = fil.map(e=>`<tr>
+    <td>
+      <div style="font-weight:700;font-size:13px">${e.name}</div>
+      <div style="font-size:11px;color:var(--text-3);font-family:var(--mf)">ID: ${e.id}</div>
+    </td>
+    <td style="font-weight:500">${e.pos}</td>
+    <td><span style="background:var(--fire-light);color:var(--fire);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">${e.dept}</span></td>
+    <td class="num" style="font-weight:700;color:var(--ember)">₱${fmt(e.rate)}</td>
+    <td class="num">₱${fmt(e.transpo||0)}</td>
+    <td class="num" style="font-size:12px">${e.sss||'<span style="color:var(--text-4)">—</span>'}</td>
+    <td class="num" style="font-size:12px">${e.ph||'<span style="color:var(--text-4)">—</span>'}</td>
+    <td class="num" style="font-size:12px">${e.hdmf||'<span style="color:var(--text-4)">—</span>'}</td>
+    <td><span class="pill ${e.status==='active'?'pa':'pi'}">${e.status==='active'?'● Active':'○ Inactive'}</span></td>
+    <td>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg bxs" onclick="openEmpModal('${e.id}')">✏️ Edit</button>
+        <button class="btn bd2 bxs" onclick="delEmp('${e.id}')">Delete</button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function openEmpModal(id=null){
+  if(!isAdmin()) return;
+  editEmpId = id;
+  document.getElementById('em-title').textContent = id ? 'Edit Employee' : 'Add New Employee';
+  if(id){
+    const e = employees.find(x=>x.id===id); if(!e) return;
+    document.getElementById('f-name').value=e.name||'';
+    document.getElementById('f-pos').value=e.pos||'';
+    document.getElementById('f-dept').value=e.dept||'WAITRESS';
+    document.getElementById('f-hired').value=e.hired||'';
+    document.getElementById('f-rate').value=e.rate||'';
+    document.getElementById('f-transpo').value=e.transpo||'';
+    document.getElementById('f-deploy').value=e.deploy||'KENJI MIN';
+    document.getElementById('f-sss').value=e.sss||'';
+    document.getElementById('f-ph').value=e.ph||'';
+    document.getElementById('f-hd').value=e.hdmf||'';
+    document.getElementById('f-tin').value=e.tin||'';
+    document.getElementById('f-eid').value=e.eid||'';
+    document.getElementById('f-stat').value=e.status||'active';
+  } else {
+    ['name','pos','hired','rate','transpo','sss','ph','hd','tin','eid'].forEach(f=>{
+      const el=document.getElementById('f-'+f); if(el) el.value='';
+    });
+    document.getElementById('f-stat').value='active';
+    document.getElementById('f-dept').value='INSTRUCTOR';
+    document.getElementById('f-deploy').value='KENJI MIN';
+  }
+  document.getElementById('emp-modal').classList.add('open');
+}
+
+function closeEmpModal(){ document.getElementById('emp-modal').classList.remove('open'); editEmpId=null; }
+
+function saveEmp(){
+  const name = document.getElementById('f-name').value.trim();
+  const rate = parseFloat(document.getElementById('f-rate').value)||0;
+  if(!name||!rate){ toast('Name and Daily Rate are required','error'); return; }
+  const emp = {
+    id: editEmpId||(Date.now()+''),
+    name,
+    pos: document.getElementById('f-pos').value.trim(),
+    dept: document.getElementById('f-dept').value,
+    hired: document.getElementById('f-hired').value.trim(),
+    rate, transpo: parseFloat(document.getElementById('f-transpo').value)||0,
+    deploy: document.getElementById('f-deploy').value.trim(),
+    sss: document.getElementById('f-sss').value.trim(),
+    ph: document.getElementById('f-ph').value.trim(),
+    hdmf: document.getElementById('f-hd').value.trim(),
+    tin: document.getElementById('f-tin').value.trim(),
+    eid: document.getElementById('f-eid').value.trim(),
+    status: document.getElementById('f-stat').value
+  };
+  if(editEmpId){ const i=employees.findIndex(e=>e.id===editEmpId); if(i!==-1) employees[i]=emp; }
+  else employees.push(emp);
+  save(); closeEmpModal(); renderEmpTable();
+  toast(editEmpId ? 'Employee updated!' : 'Employee added!');
+}
+
+function delEmp(id){
+  if(!isAdmin()) return;
+  if(!confirm('Delete this employee? This cannot be undone.')) return;
+  employees = employees.filter(e=>e.id!==id);
+  save(); renderEmpTable(); toast('Employee removed');
+}
+
+// ─── PAYROLL SHEET ─────────────────────────────────────────────────────────────
+function loadPayrollSheet(fromDTR){
+  if(!isAdmin()) return;
+  const period = document.getElementById('pr-name').value.trim()||'Unnamed Period';
+  const from = document.getElementById('pr-from').value;
+  const to = document.getElementById('pr-to').value;
+  const active = employees.filter(e=>e.status==='active');
+  if(!active.length){ toast('No active employees','error'); return; }
+  prEntries = {};
+  const depts = ['WAITRESS','CHEF','OTHERS'];
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:16px;font-weight:700">${period}</div>
+        <div style="font-size:12px;color:var(--text-3);font-family:var(--mf)">${from?'From: '+from:''}${to?' → '+to:''}</div>
+      </div>
+      <button class="btn bp" onclick="saveAllPayroll('${period.replace(/'/g,"\\'")}')">💾 Save All Payslips</button>
+      ${fromDTR ? '<span style="background:var(--green-light);color:var(--green);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid rgba(22,163,74,.2)">&#128279; DTR pre-filled</span>' : ''}
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>Employee</th><th>Position</th><th>Daily Rate</th>
+        <th>Days Worked</th><th>Basic Pay</th><th>OT / Premium</th>
+        <th>Allowances</th><th>Gross Pay</th><th>Deductions</th><th>Net Pay</th><th>Action</th>
+      </tr></thead>
+      <tbody id="pr-tbody"></tbody>
+    </table></div>`;
+  document.getElementById('payroll-panel').innerHTML = html;
+
+  const tbody = document.getElementById('pr-tbody');
+  let rows = '';
+  depts.forEach(dept=>{
+    const depEmp = active.filter(e=>e.dept===dept);
+    if(!depEmp.length) return;
+    rows += `<tr><td colspan="11"><div class="dept-hd">🏷 ${dept}</div></td></tr>`;
+    depEmp.forEach(emp=>{
+      prEntries[emp.id] = {rh:0,late:0,prev:0,ot:0,rd:0,rdot:0,lh:0,lhot:0,lhrd:0,lhrdot:0,sh:0,shot:0,shrd:0,shrdot:0,dh:0,dhot:0,dhrd:0,dhrdot:0,ta:emp.transpo||0,fa:0,adj:0,sss:0,phic:0,hdmf:0,sssloan:0,otherDed:0};
+      // Pre-fill from DTR if available
+      if(fromDTR && window._dtrPayrollData && window._dtrPayrollData[emp.id]){
+        const dtrFill = window._dtrPayrollData[emp.id];
+        prEntries[emp.id].rh   = dtrFill.rh   || 0;
+        prEntries[emp.id].late = dtrFill.late  || 0;
+        // Update row display immediately
+        const c = computePay(prEntries[emp.id], N(emp.rate));
+        setTimeout(()=>{
+          const rhEl  = document.getElementById('pr-rh-'+emp.id);
+          const bpEl  = document.getElementById('pr-bp-'+emp.id);
+          const otEl  = document.getElementById('pr-ot-'+emp.id);
+          const alEl  = document.getElementById('pr-al-'+emp.id);
+          const grEl  = document.getElementById('pr-gr-'+emp.id);
+          const deEl  = document.getElementById('pr-de-'+emp.id);
+          const npEl  = document.getElementById('pr-np-'+emp.id);
+          if(rhEl) rhEl.textContent = R(N(prEntries[emp.id].rh)/8,2)+' days';
+          if(bpEl) bpEl.textContent = '\u20b1'+fmt(c.basic);
+          if(otEl) otEl.textContent = '\u20b1'+fmt(c.totalOT);
+          if(alEl) alEl.textContent = '\u20b1'+fmt(c.totalAllow);
+          if(grEl) grEl.textContent = '\u20b1'+fmt(c.totalGross);
+          if(deEl) deEl.textContent = '-\u20b1'+fmt(c.totalDed);
+          if(npEl) npEl.textContent = '\u20b1'+fmt(c.netPay);
+          if(rhEl) rhEl.closest('tr').style.background='var(--green-light)';
+        }, 50);
+      }
+      rows += `<tr id="pr-row-${emp.id}">
+        <td><div style="font-weight:700;font-size:13px">${emp.name}</div></td>
+        <td style="font-size:12px;color:var(--text-3)">${emp.pos}</td>
+        <td class="num" style="color:var(--ember);font-weight:600">₱${fmt(emp.rate)}</td>
+        <td id="pr-rh-${emp.id}" class="num" style="color:var(--text-3)">—</td>
+        <td id="pr-bp-${emp.id}" class="num">—</td>
+        <td id="pr-ot-${emp.id}" class="num">—</td>
+        <td id="pr-al-${emp.id}" class="num">—</td>
+        <td id="pr-gr-${emp.id}" class="num" style="font-weight:700">—</td>
+        <td id="pr-de-${emp.id}" class="num" style="color:var(--red)">—</td>
+        <td id="pr-np-${emp.id}" class="num" style="font-weight:800;color:var(--green)">—</td>
+        <td><button class="btn bg bxs" onclick="openPrModal('${emp.id}')">📝 Enter</button></td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = rows;
+}
+
+function openPrModal(empId){
+  const emp = employees.find(e=>e.id===empId); if(!emp) return;
+  currentEmpId = empId;
+  document.getElementById('pr-modal-title').textContent = 'Enter Hours — '+emp.name;
+  const d = prEntries[empId]||{};
+  const ids = ['rh','late','prev','ot','rd','rdot','lh','lhot','lhrd','lhrdot','sh','shot','shrd','shrdot','dh','dhot','dhrd','dhrdot','ta','adj','sss','phic','hdmf','sssloan','other-ded'];
+  ids.forEach(id=>{
+    const el = document.getElementById('p-'+id);
+    const key = id.replace(/-/g,'_');
+    if(el && d[key]!==undefined) el.value = d[key]||'';
+    else if(el) el.value = '';
+  });
+  if(!d.ta && emp.transpo) document.getElementById('p-ta').value = emp.transpo;
+  // Pre-fill from DTR if available and not already set
+  if(window._dtrPayrollData && window._dtrPayrollData[empId]){
+    const dtrF = window._dtrPayrollData[empId];
+    if(!d.rh  && dtrF.rh)   { document.getElementById('p-rh').value   = dtrF.rh; }
+    if(!d.late && dtrF.late) { document.getElementById('p-late').value = dtrF.late; }
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab').classList.add('active');
+  document.getElementById('t-basic').classList.add('active');
+  calcLive();
+  document.getElementById('pr-modal').classList.add('open');
+}
+
+function closePrModal(){ document.getElementById('pr-modal').classList.remove('open'); currentEmpId=null; }
+
+function savePrEntry(){
+  if(!currentEmpId) return;
+  const getF = id => N(document.getElementById('p-'+id)?.value);
+  prEntries[currentEmpId] = {rh:getF('rh'),late:getF('late'),prev:getF('prev'),ot:getF('ot'),rd:getF('rd'),rdot:getF('rdot'),lh:getF('lh'),lhot:getF('lhot'),lhrd:getF('lhrd'),lhrdot:getF('lhrdot'),sh:getF('sh'),shot:getF('shot'),shrd:getF('shrd'),shrdot:getF('shrdot'),dh:getF('dh'),dhot:getF('dhot'),dhrd:getF('dhrd'),dhrdot:getF('dhrdot'),ta:getF('ta'),fa:0,adj:getF('adj'),sss:getF('sss'),phic:getF('phic'),hdmf:getF('hdmf'),sssloan:getF('sssloan'),otherDed:getF('other-ded')};
+  const emp = employees.find(e=>e.id===currentEmpId);
+  const c = computePay(prEntries[currentEmpId], N(emp.rate));
+  document.getElementById('pr-rh-'+currentEmpId).textContent = R(N(prEntries[currentEmpId].rh)/8,2)+' days';
+  document.getElementById('pr-bp-'+currentEmpId).textContent = '₱'+fmt(c.basic);
+  document.getElementById('pr-ot-'+currentEmpId).textContent = '₱'+fmt(c.totalOT);
+  document.getElementById('pr-al-'+currentEmpId).textContent = '₱'+fmt(c.totalAllow);
+  document.getElementById('pr-gr-'+currentEmpId).textContent = '₱'+fmt(c.totalGross);
+  document.getElementById('pr-de-'+currentEmpId).textContent = '-₱'+fmt(c.totalDed);
+  document.getElementById('pr-np-'+currentEmpId).textContent = '₱'+fmt(c.netPay);
+  closePrModal();
+  toast('Entry saved for '+emp.name);
+}
+
+function saveAllPayroll(period){
+  if(!isAdmin()) return;
+  const empIds = Object.keys(prEntries);
+  if(!empIds.length){ toast('No entries to save','error'); return; }
+  let added = 0;
+  empIds.forEach(id=>{
+    const emp = employees.find(e=>e.id===id); if(!emp) return;
+    const d = prEntries[id];
+    const c = computePay(d, N(emp.rate));
+    if(c.netPay===0 && c.basic===0) return;
+    payslips.push({id:Date.now()+Math.random(),empId:id,empName:emp.name,pos:emp.pos,dept:emp.dept,period,rate:emp.rate,sssNo:emp.sss,phNo:emp.ph,hdmfNo:emp.hdmf,tin:emp.tin,eid:emp.eid,deploy:emp.deploy,hired:emp.hired,...d,...c,generatedAt:new Date().toISOString()});
+    added++;
+  });
+  save(); toast(`${added} payslip(s) saved successfully!`); nav('payslips');
+}
+
+// ─── PAYSLIPS ─────────────────────────────────────────────────────────────────
+function renderSlipList(){
+  const q = (document.getElementById('slip-q')?.value||'').toLowerCase();
+  const owned = isAdmin() ? payslips : payslips.filter(s=>String(s.empId)===String(currentUser?.empId));
+  const fil = [...owned].filter(s=>`${s.empName} ${s.period}`.toLowerCase().includes(q)).reverse();
+  const tb = document.getElementById('slip-tbody');
+  const em = document.getElementById('slip-empty');
+  if(!fil.length){ tb.innerHTML=''; em.style.display=''; return; }
+  em.style.display = 'none';
+  tb.innerHTML = fil.map(s=>`<tr>
+    <td>
+      <div style="font-weight:700;font-size:13px">${s.empName}</div>
+      <div style="font-size:11px;color:var(--text-3)">${s.pos} · ${s.dept}</div>
+    </td>
+    <td class="num" style="font-size:12px">${s.period}</td>
+    <td class="num">₱${fmt(s.basic)}</td>
+    <td class="num">₱${fmt(s.totalOT)}</td>
+    <td class="num">₱${fmt(s.totalAllow)}</td>
+    <td class="num" style="font-weight:700">₱${fmt(s.totalGross)}</td>
+    <td class="num" style="color:var(--red)">-₱${fmt(s.totalDed)}</td>
+    <td class="num" style="font-weight:800;color:var(--green);font-size:14px">₱${fmt(s.netPay)}</td>
+    <td>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg bxs" onclick="viewSlip('${s.id}')">👁 View</button>
+        ${isAdmin()?`<button class="btn bg bxs" style="color:var(--blue);border-color:rgba(37,99,235,.3);background:var(--blue-light)" onclick="openEditSlip('${s.id}')">✏️ Edit</button>`:''}
+        ${isAdmin()?`<button class="btn bd2 bxs" onclick="delSlip('${s.id}')">Del</button>`:''}
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function viewSlip(id){
+  const s = payslips.find(p=>String(p.id)===String(id));
+  if(!s) return;
+  if(!isAdmin() && String(s.empId)!==String(currentUser?.empId)){ toast('You can only view your own payslips','error'); return; }
+
+  const rows = [];
+  if(s.basic) rows.push(['Basic Pay', s.basic]);
+  if(s.ot) rows.push(['Overtime Pay (×1.25)', s.ot]);
+
+  if(s.rd) rows.push(['Rest Day Pay (×1.30)', s.rd]);
+  if(s.rdot) rows.push(['Rest Day Overtime (×1.69)', s.rdot]);
+
+  if(s.lh) rows.push(['Legal Holiday (×1.0 addl)', s.lh]);
+  if(s.lhot) rows.push(['Legal Holiday OT (×2.6)', s.lhot]);
+
+  if(s.lhrd) rows.push(['LH Rest Day (×2.6)', s.lhrd]);
+  if(s.lhrdot) rows.push(['LH Rest Day OT (×3.38)', s.lhrdot]);
+  if(s.sh) rows.push(['Special Holiday (×1.30)', s.sh]);
+  if(s.shot) rows.push(['Special Holiday OT (×1.69)', s.shot]);
+
+  if(s.shrd) rows.push(['SH Rest Day (×1.50)', s.shrd]);
+  if(s.dh) rows.push(['Double Holiday (×3.0)', s.dh]);
+  if(s.dhot) rows.push(['Double Holiday OT (×3.9)', s.dhot]);
+  if(s.ta) rows.push(['Transportation Allowance', s.ta]);
+  if(s.adj) rows.push(['Adjustment / Others', s.adj]);
+  if(s.prev>0) rows.push(['Gross Pay (1st Period)', s.prev]);
+
+  const dedRows = [];
+  if(s.sss) dedRows.push(['SSS Contribution', s.sss]);
+  if(s.phic) dedRows.push(['PhilHealth (PHIC)', s.phic]);
+  if(s.hdmf) dedRows.push(['Pag-IBIG (HDMF)', s.hdmf]);
+  if(s.sssloan) dedRows.push(['SSS Loan', s.sssloan]);
+  if(s.otherDed) dedRows.push(['Other Deductions', s.otherDed]);
+
+  document.getElementById('slip-modal-body').innerHTML = `
+    <div class="ps-wrap">
+      <div class="ps-header-band">
+        <div>
+          <div class="ps-co">🔥 ${appSettings.companyName}</div>
+          <div class="ps-addr">${appSettings.address}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="ps-period-l">Pay Slip</div>
+          <div class="ps-period-v">${s.period}</div>
+          <div class="ps-gen">Generated: ${new Date(s.generatedAt).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
+        </div>
+      </div>
+      <div class="ps-info-grid">
+        <div class="ps-info-i"><label>Employee Name</label><span>${s.empName}</span></div>
+        <div class="ps-info-i"><label>Employee No.</label><span>${s.eid||'—'}</span></div>
+        <div class="ps-info-i"><label>Position</label><span>${s.pos}</span></div>
+        <div class="ps-info-i"><label>Department</label><span>${s.dept}</span></div>
+        <div class="ps-info-i"><label>Daily Rate</label><span style="font-family:var(--mf);color:var(--ember)">₱${fmt(s.rate)}</span></div>
+        <div class="ps-info-i"><label>Days Worked</label><span style="font-family:var(--mf)">${R(N(s.rh)/8,2)} days</span></div>
+        <div class="ps-info-i"><label>SSS No.</label><span style="font-family:var(--mf)">${s.sssNo||'—'}</span></div>
+        <div class="ps-info-i"><label>PhilHealth No.</label><span style="font-family:var(--mf)">${s.phNo||'—'}</span></div>
+        <div class="ps-info-i"><label>Pag-IBIG No.</label><span style="font-family:var(--mf)">${s.hdmfNo||'—'}</span></div>
+        <div class="ps-info-i"><label>TIN</label><span style="font-family:var(--mf)">${s.tin||'—'}</span></div>
+        <div class="ps-info-i"><label>Date Hired</label><span>${s.hired||'—'}</span></div>
+        <div class="ps-info-i"><label>Deployed To</label><span>${s.deploy||'KENJI MIN'}</span></div>
+      </div>
+
+      <div class="ps-section-title">💰 Earnings</div>
+      ${rows.map(r=>`<div class="ps-row"><span class="ps-label">${r[0]}</span><span class="ps-amount" style="color:var(--text-2)">₱${fmt(r[1])}</span></div>`).join('')}
+      <div class="ps-subtotal">
+        <span>Total Gross Pay</span>
+        <span style="font-family:var(--mf);color:var(--ember)">₱${fmt(s.totalGross)}</span>
+      </div>
+
+      ${dedRows.length ? `
+      <div class="ps-section-title">➖ Deductions</div>
+      ${dedRows.map(r=>`<div class="ps-row"><span class="ps-label">${r[0]}</span><span class="ps-amount" style="color:var(--red)">-₱${fmt(r[1])}</span></div>`).join('')}
+      <div class="ps-subtotal">
+        <span>Total Deductions</span>
+        <span style="font-family:var(--mf);color:var(--red)">-₱${fmt(s.totalDed)}</span>
+      </div>` : ''}
+
+      <div class="ps-net">
+        <span>NET PAY</span>
+        <span style="font-family:var(--mf)">₱${fmt(s.netPay)}</span>
+      </div>
+
+      <div class="ps-sig">
+        <div class="ps-sig-l">Prepared by</div>
+        <div class="ps-sig-l">Noted by</div>
+        <div class="ps-sig-l">Received by</div>
+      </div>
+      ${s.lastEditedAt ? `<div style="margin-top:14px;padding:9px 14px;background:var(--blue-light);border:1px solid rgba(37,99,235,.18);border-radius:8px;font-size:11px;color:var(--blue);font-family:var(--mf)">✏️ Last edited by Admin · ${new Date(s.lastEditedAt).toLocaleString('en-PH')}${s.editNotes?' — "'+s.editNotes+'"':''}</div>` : ''}
+    </div>`;
+
+  document.getElementById('slip-modal').classList.add('open');
+  // Show Edit button for admins and store current slip id on the modal
+  const editBtn = document.getElementById('slip-modal-edit-btn');
+  if(editBtn){ editBtn.style.display = isAdmin() ? '' : 'none'; editBtn.dataset.slipId = String(s.id); }
+}
+
+function switchToEditFromView(){
+  const editBtn = document.getElementById('slip-modal-edit-btn');
+  const slipId = editBtn?.dataset?.slipId;
+  if(!slipId) return;
+  closeSlipModal();
+  openEditSlip(slipId);
+}
+
+function closeSlipModal(){ document.getElementById('slip-modal').classList.remove('open'); }
+function delSlip(id){ if(!isAdmin()) return; if(!confirm('Delete this payslip?')) return; payslips=payslips.filter(p=>String(p.id)!==String(id)); save(); renderSlipList(); toast('Payslip deleted'); }
+
+// ─── EDIT PAYSLIP (Admin) ─────────────────────────────────────────────────────
+let editSlipId = null;
+
+function openEditSlip(id){
+  if(!isAdmin()){ toast('Admin only','error'); return; }
+  const s = payslips.find(p=>String(p.id)===String(id));
+  if(!s) return;
+  editSlipId = String(id);
+
+  // Header
+  document.getElementById('edit-slip-title').textContent = '✏️ Edit Payslip — '+s.empName;
+  document.getElementById('edit-slip-sub').textContent = 'Admin edit mode · '+s.period;
+  document.getElementById('es-emp-name').textContent = s.empName;
+  document.getElementById('es-emp-info').textContent = (s.pos||'')+(s.dept?' · '+s.dept:'')+' · ₱'+fmt(s.rate)+'/day';
+  document.getElementById('es-period').value = s.period;
+
+  // Helper to set value or blank
+  const sv = (fid, val) => { const el=document.getElementById(fid); if(el) el.value = N(val)||''; };
+
+  // Basic
+  sv('es-rh', s.rh); sv('es-late', s.late); sv('es-prev', s.prev);
+  // OT / Premium
+  sv('es-ot', s.ot); sv('es-rd', s.rd); sv('es-rdot', s.rdot);
+  // Holiday
+  sv('es-lh', s.lh); sv('es-lhot', s.lhot); sv('es-lhrd', s.lhrd); sv('es-lhrdot', s.lhrdot);
+  sv('es-sh', s.sh); sv('es-shot', s.shot); sv('es-shrd', s.shrd);
+  sv('es-dh', s.dh); sv('es-dhot', s.dhot); sv('es-dhrd', s.dhrd); sv('es-dhrdot', s.dhrdot);
+  // Allowances
+  sv('es-ta', s.ta); sv('es-adj', s.adj);
+  // Deductions
+  sv('es-sss', s.sss); sv('es-phic', s.phic); sv('es-hdmf', s.hdmf);
+  sv('es-sssloan', s.sssloan); sv('es-other-ded', s.otherDed);
+  // Notes
+  document.getElementById('es-notes').value = s.editNotes||'';
+
+  // Reset to first tab
+  document.querySelectorAll('#edit-slip-modal .tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#edit-slip-modal .tab').forEach(t=>t.classList.remove('active'));
+  const firstTab = document.querySelector('#edit-slip-modal .tab');
+  const firstPane = document.getElementById('es-t-basic');
+  if(firstTab) firstTab.classList.add('active');
+  if(firstPane) firstPane.classList.add('active');
+
+  calcEditLive();
+  document.getElementById('edit-slip-modal').classList.add('open');
+}
+
+function closeEditSlip(){
+  document.getElementById('edit-slip-modal').classList.remove('open');
+  editSlipId = null;
+}
+
+function getEditField(id){ return N(document.getElementById(id)?.value); }
+function setEditField(id, v){ const el=document.getElementById(id); if(el) el.value = v===0?'':R(v,2); }
+
+function calcEditLive(){
+  const s = payslips.find(p=>String(p.id)===String(editSlipId));
+  if(!s) return;
+  const rate = N(s.rate);
+  const d = {
+    rh:getEditField('es-rh'), late:getEditField('es-late'), prev:getEditField('es-prev'),
+    ot:getEditField('es-ot'), rd:getEditField('es-rd'), rdot:getEditField('es-rdot'),
+    lh:getEditField('es-lh'), lhot:getEditField('es-lhot'), lhrd:getEditField('es-lhrd'), lhrdot:getEditField('es-lhrdot'),
+    sh:getEditField('es-sh'), shot:getEditField('es-shot'), shrd:getEditField('es-shrd'), shrdot:0,
+    dh:getEditField('es-dh'), dhot:getEditField('es-dhot'), dhrd:getEditField('es-dhrd'), dhrdot:getEditField('es-dhrdot'),
+    ta:getEditField('es-ta'), fa:0, adj:getEditField('es-adj'),
+    sss:getEditField('es-sss'), phic:getEditField('es-phic'), hdmf:getEditField('es-hdmf'),
+    sssloan:getEditField('es-sssloan'), otherDed:getEditField('es-other-ded')
+  };
+  const c = computePay(d, rate);
+
+  setEditField('es-days', c.days); setEditField('es-rpay', c.rpay);
+  setEditField('es-late-ded', c.lateDed); setEditField('es-basic', c.basic);
+  setEditField('es-ot-a', c.ot); setEditField('es-rd-a', c.rd); setEditField('es-rdot-a', c.rdot);
+  setEditField('es-lh-a', c.lh); setEditField('es-lhot-a', c.lhot);
+  setEditField('es-lhrd-a', c.lhrd); setEditField('es-lhrdot-a', c.lhrdot);
+  setEditField('es-sh-a', c.sh); setEditField('es-shot-a', c.shot);
+  setEditField('es-shrd-a', c.shrd);
+  setEditField('es-dh-a', c.dh); setEditField('es-dhot-a', c.dhot);
+  setEditField('es-dhrd-a', c.dhrd); setEditField('es-dhrdot-a', c.dhrdot);
+  setEditField('es-gross-cur', c.grossCur); setEditField('es-gross-prev', N(d.prev)); setEditField('es-gross-tot', c.totalGross);
+  setEditField('es-tot-ded', c.totalDed); setEditField('es-tgross', c.totalGross); setEditField('es-netpay', c.netPay);
+
+  document.getElementById('es-s-basic').textContent = '₱'+fmt(c.basic);
+  document.getElementById('es-s-ot').textContent = '₱'+fmt(c.totalOT);
+  document.getElementById('es-s-allow').textContent = '₱'+fmt(c.totalAllow);
+  document.getElementById('es-s-ded').textContent = '-₱'+fmt(c.totalDed);
+  document.getElementById('es-s-net').textContent = '₱'+fmt(c.netPay);
+}
+
+function saveEditSlip(){
+  if(!isAdmin()) return;
+  const idx = payslips.findIndex(p=>String(p.id)===String(editSlipId));
+  if(idx===-1){ toast('Payslip not found','error'); return; }
+
+  const s = payslips[idx];
+  const rate = N(s.rate);
+  const d = {
+    rh:getEditField('es-rh'), late:getEditField('es-late'), prev:getEditField('es-prev'),
+    ot:getEditField('es-ot'), rd:getEditField('es-rd'), rdot:getEditField('es-rdot'),
+    lh:getEditField('es-lh'), lhot:getEditField('es-lhot'), lhrd:getEditField('es-lhrd'), lhrdot:getEditField('es-lhrdot'),
+    sh:getEditField('es-sh'), shot:getEditField('es-shot'), shrd:getEditField('es-shrd'), shrdot:0,
+    dh:getEditField('es-dh'), dhot:getEditField('es-dhot'), dhrd:getEditField('es-dhrd'), dhrdot:getEditField('es-dhrdot'),
+    ta:getEditField('es-ta'), fa:0, adj:getEditField('es-adj'),
+    sss:getEditField('es-sss'), phic:getEditField('es-phic'), hdmf:getEditField('es-hdmf'),
+    sssloan:getEditField('es-sssloan'), otherDed:getEditField('es-other-ded')
+  };
+  const c = computePay(d, rate);
+
+  // Merge edits back, preserving identity fields
+  payslips[idx] = {
+    ...s, ...d, ...c,
+    period: document.getElementById('es-period').value.trim() || s.period,
+    editNotes: document.getElementById('es-notes').value.trim(),
+    lastEditedAt: new Date().toISOString(),
+    lastEditedBy: 'Admin'
+  };
+
+  save();
+  renderSlipList();
+  closeEditSlip();
+  toast('Payslip updated successfully!');
+}
+
+// ─── REPORTS ──────────────────────────────────────────────────────────────────
+function renderReports(){
+  if(!payslips.length){
+    document.getElementById('reports-content').innerHTML='<div class="card"><div class="empty"><div class="ei">📊</div><div class="et">No data yet</div><div class="es">Run and save payroll to see reports here</div></div></div>';
+    return;
+  }
+  const byP = {};
+  payslips.forEach(s=>{ if(!byP[s.period]) byP[s.period]=[]; byP[s.period].push(s); });
+  document.getElementById('reports-content').innerHTML = Object.entries(byP).reverse().map(([period, slips])=>{
+    const tGross = R(slips.reduce((s,r)=>s+N(r.totalGross),0));
+    const tNet   = R(slips.reduce((s,r)=>s+N(r.netPay),0));
+    const tDed   = R(slips.reduce((s,r)=>s+N(r.totalDed),0));
+    const tBasic = R(slips.reduce((s,r)=>s+N(r.basic),0));
+    const tOT    = R(slips.reduce((s,r)=>s+N(r.totalOT),0));
+    const tAllow = R(slips.reduce((s,r)=>s+N(r.totalAllow),0));
+    const tSSS   = R(slips.reduce((s,r)=>s+N(r.sss),0));
+    const tPH    = R(slips.reduce((s,r)=>s+N(r.phic),0));
+    const tHD    = R(slips.reduce((s,r)=>s+N(r.hdmf),0));
+    return `<div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:18px;font-weight:800;letter-spacing:-.01em">${period}</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:3px">${slips.length} employee(s) processed</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Total Net Payroll</div>
+          <div style="font-size:24px;font-weight:800;color:var(--green);font-family:var(--mf)">₱${fmt(tNet)}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+        ${[['Basic Pay',tBasic,'var(--ember)'],['Total OT/Premium',tOT,'var(--blue)'],['Allowances',tAllow,'var(--green)'],['Total Gross',tGross,'var(--fire)']].map(([l,v,c])=>`
+          <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+            <div style="font-size:10px;color:var(--text-3);font-family:var(--mf);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-weight:600">${l}</div>
+            <div style="font-weight:800;font-size:16px;color:${c};font-family:var(--mf)">₱${fmt(v)}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+        ${[['SSS Total',tSSS],['PhilHealth Total',tPH],['HDMF Total',tHD]].map(([l,v])=>`
+          <div style="background:var(--red-light);border-radius:10px;padding:14px;border:1px solid rgba(220,38,38,.15)">
+            <div style="font-size:10px;color:var(--red);font-family:var(--mf);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-weight:600">${l}</div>
+            <div style="font-weight:800;font-size:16px;color:var(--red);font-family:var(--mf)">₱${fmt(v)}</div>
+          </div>`).join('')}
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Dept</th><th>Days</th><th>Basic</th>
+            <th>OT / Premium</th><th>Allowances</th><th>Gross</th>
+            <th>Deductions</th><th>Net Pay</th>
+          </tr></thead>
+          <tbody>${slips.map(s=>`<tr>
+            <td>
+              <div style="font-weight:700;font-size:13px">${s.empName}</div>
+              <div style="font-size:11px;color:var(--text-3)">${s.pos}</div>
+            </td>
+            <td><span style="background:var(--fire-light);color:var(--fire);padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600">${s.dept}</span></td>
+            <td class="num">${R(N(s.rh)/8,2)}d</td>
+            <td class="num">₱${fmt(s.basic)}</td>
+            <td class="num">₱${fmt(s.totalOT)}</td>
+            <td class="num">₱${fmt(s.totalAllow)}</td>
+            <td class="num" style="font-weight:700">₱${fmt(s.totalGross)}</td>
+            <td class="num" style="color:var(--red)">-₱${fmt(s.totalDed)}</td>
+            <td class="num" style="font-weight:800;color:var(--green)">₱${fmt(s.netPay)}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:13px;color:var(--text-3)">
+          Total Deductions: <strong style="color:var(--red)">₱${fmt(tDed)}</strong>
+          &nbsp;·&nbsp; Total Gross: <strong style="color:var(--ember)">₱${fmt(tGross)}</strong>
+          &nbsp;·&nbsp; Net Payroll: <strong style="color:var(--green)">₱${fmt(tNet)}</strong>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function renderSettings(){
+  if(!isAdmin()) return;
+  document.getElementById('set-company').value = appSettings.companyName||'';
+  document.getElementById('set-address').value = appSettings.address||'';
+  document.getElementById('set-footer').value = appSettings.footer||'';
+  syncEmployeeAccounts();
+  document.getElementById('employee-account-list').innerHTML = employees.map(e=>{
+    const id = employeeLoginId(e);
+    return `<div class="account-row">
+      <div>
+        <div style="font-weight:700;font-size:13px">${e.name}</div>
+        <div style="font-size:11px;color:var(--text-3);font-family:var(--mf)">Login ID: ${id} · ${e.pos}</div>
+      </div>
+      <input type="text" id="acct-${e.id}" value="${auth.employeePasswords[id]||id}" placeholder="Password">
+      <button class="btn bg bsm" onclick="saveEmployeePassword('${e.id}')">Save</button>
+    </div>`;
+  }).join('');
+}
+
+function saveCompanySettings(){
+  appSettings.companyName = document.getElementById('set-company').value.trim()||'KENJI MIN JAPANESE TRAINING CENTER INC.';
+  appSettings.address = document.getElementById('set-address').value.trim();
+  appSettings.footer = document.getElementById('set-footer').value.trim()||'Dasmariñas, Cavite';
+  save(); applyCompanySettings(); toast('Company settings saved!');
+}
+
+function saveAdminPassword(){
+  const pass = document.getElementById('set-admin-pass').value;
+  if(!pass){ toast('Enter a new admin password','error'); return; }
+  auth.adminPassword = pass;
+  document.getElementById('set-admin-pass').value = '';
+  save(); toast('Admin password updated!');
+}
+
+function saveEmployeePassword(empId){
+  const emp = employees.find(e=>String(e.id)===String(empId)); if(!emp) return;
+  const id = employeeLoginId(emp);
+  const val = document.getElementById('acct-'+emp.id).value.trim();
+  if(!val){ toast('Password cannot be blank','error'); return; }
+  auth.employeePasswords[id] = val;
+  save(); toast('Password saved for '+emp.name);
+}
+
+// ─── SEED EMPLOYEES ────────────────────────────────────────────────────────────
+if(!employees.length){
+  employees = [
+    {id:'1',name:'TAGALOGON, LOREBELLE',pos:'PRINCIPAL',dept:'PRINCIPAL',hired:'Jan 1, 2024',rate:0,transpo:5000,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0002',status:'active'},
+    {id:'2',name:'PAGADOR, JENNIFER',pos:'INSTRUCTOR',dept:'INSTRUCTOR',hired:'Jan 1, 2024',rate:45000,transpo:0,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0005',status:'active'},
+    {id:'3',name:'SANTOS, RACHEL',pos:'HEAD ADMINISTRATOR',dept:'HEAD ADMINISTRATOR',hired:'Jan 1, 2024',rate:50000,transpo:2640,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0006',status:'active'},
+    {id:'4',name:'TICALA, JOHN GERNEL',pos:'ACCOUNTING OFFICER',dept:'ACCOUNTING OFFICER',hired:'Jan 1, 2024',rate:35000,transpo:140,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0012',status:'active'},
+    {id:'5',name:'ANDAL, ROWENA',pos:'INSTRUCTOR',dept:'INSTRUCTOR',hired:'Jan 1, 2024',rate:20000,transpo:100,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0022',status:'active'},
+    {id:'6',name:'SANTOS, SHEENA MAE',pos:'OFFICER IN CHARGE',dept:'OFFICER IN CHARGE',hired:'Jan 1, 2024',rate:25000,transpo:140,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0027',status:'active'},
+    {id:'7',name:'CAPISEN, JEFFERSON',pos:'DRIVER',dept:'DRIVER',hired:'Jan 1, 2024',rate:25000,transpo:0,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0033',status:'active'},
+    {id:'8',name:'DENUAM, JEAN CARLO',pos:'INSTRUCTOR',dept:'INSTRUCTOR',hired:'Jan 1, 2024',rate:0,transpo:500,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0034',status:'active'},
+    {id:'9',name:'ARADO, UJIN',pos:'OFFICER IN CHARGE',dept:'OFFICER IN CHARGE',hired:'Jan 1, 2024',rate:0,transpo:0,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0035',status:'active'},
+    {id:'10',name:'BAYOS, SHAIRA',pos:'INSTRUCTOR',dept:'INSTRUCTOR',hired:'Jan 1, 2024',rate:0,transpo:0,deploy:'KENJI MIN',sss:'',ph:'',hdmf:'',tin:'',eid:'KJTC-0036',status:'active'},
+  ];
+  save();
+}
+
+
+// ─── DTR RENDER PAGE (called on nav) ─────────────────────────────────────────
+function renderDTRPage(){
+  // If dtrData exists re-render table
+  if(dtrData && dtrData.length){
+    document.getElementById('dtr-empty').style.display='none';
+    document.getElementById('dtr-summary-card').style.display='';
+    document.getElementById('dtr-send-payroll-btn').style.display='';
+    renderDTRTable();
+  }
+}
+
+// ─── DTR MODULE ───────────────────────────────────────────────────────────────
+let dtrData = []; // parsed DTR records: [{dtrId, dtrName, days:{date:[punches]}, regHours, lateMin, matchedEmpId}]
+let dtrPeriodLabel = '';
+
+// ── DTR NAV title map
+const _origTitles = {dashboard:'Dashboard',employees:'Employees',dtr:'DTR',payroll:'Run Payroll',payslips:'Payslips',reports:'Summary Report',settings:'Admin Settings'};
+
+// Parse times like "09:52" -> minutes since midnight
+function toMin(t){ if(!t||!t.includes(':')) return null; const [h,m]=t.trim().split(':').map(Number); return h*60+m; }
+function minToStr(m){ if(m===null||m===undefined) return '--'; const h=Math.floor(((m%1440)+1440)%1440/60); const mn=((m%1440)+1440)%1440%60; return String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0'); }
+
+// Extract all time tokens (HH:MM) from a cell string
+function extractTimes(raw){
+  if(!raw) return [];
+  const str = String(raw).replace(/\s+/g,' ').trim();
+  const matches = str.match(/\d{2}:\d{2}/g)||[];
+  return matches;
+}
+
+// Compute worked minutes from up to 4 punches [in, out] or [in, break-out, break-in, out]
+function computeWorkedMinutes(punches){
+  const mins = punches.map(toMin).filter(x=>x!==null);
+  if(mins.length<2) return {worked:0};
+  
+  let worked=0;
+  // pair punches: [0,1], [2,3], [4,5]...
+  for(let i=0;i+1<mins.length;i+=2){
+    let start=mins[i], end=mins[i+1];
+    // handle overnight
+    if(end<start) end+=1440;
+    worked += end-start;
+  }
+  return {worked};
+}
+
+// Parse the raw xlsx text for one employee row
+// rawText is the concatenated text of the employee's days
+// returns array of {date, punches[], worked} per day
+function parseDTRRow(dayTexts, dateRange){
+  return dayTexts.map((raw, idx)=>{
+    const punches = extractTimes(raw);
+    const {worked} = computeWorkedMinutes(punches);
+    return {dayIdx: idx+1, punches, worked};
+  });
+}
+
+// Main import function - reads xlsx via SheetJS
+async function importDTR(input){
+  const file = input.files[0]; if(!file) return;
+  input.value='';
+  toast('Reading DTR file...','success');
+  
+  try {
+    const XLSX = await loadXLSX();
+    const ab = await file.arrayBuffer();
+    const wb = XLSX.read(ab, {type:'array', cellText:false, cellDates:false});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', raw:false});
+    
+    parseDTRSheet(rows);
+  } catch(e){
+    console.error(e);
+    toast('Failed to read DTR file: '+e.message,'error');
+  }
+}
+
+// Lazy-load SheetJS from CDN
+function loadXLSX(){
+  return new Promise((res,rej)=>{
+    if(window.XLSX){ res(window.XLSX); return; }
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=()=>res(window.XLSX);
+    s.onerror=()=>rej(new Error('Could not load XLSX library'));
+    document.head.appendChild(s);
+  });
+}
+
+function parseDTRSheet(rows){
+  // Detect date range from header row (row 0 or 1)
+  // Find the header row that contains the date range text
+  let dateRangeStr = '';
+  let numDays = 5;
+  
+  for(let r=0;r<Math.min(5,rows.length);r++){
+    const rowStr = rows[r].join(' ');
+    const m = rowStr.match(/(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})/);
+    if(m){ dateRangeStr = m[0];
+      const d1=new Date(m[1]), d2=new Date(m[2]);
+      numDays = Math.round((d2-d1)/(86400000))+1;
+      
+      // Auto-fill period fields
+      document.getElementById('dtr-from').value = m[1];
+      document.getElementById('dtr-to').value   = m[2];
+      if(!document.getElementById('dtr-period-name').value){
+        const fmt = d => d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+        document.getElementById('dtr-period-name').value = fmt(d1)+' - '+fmt(d2);
+      }
+      break;
+    }
+  }
+
+  // Parse employee blocks
+  // Each block: ID row, then 1+ data rows with time punches per day column
+  const parsed = [];
+  
+  let i=0;
+  while(i<rows.length){
+    const row = rows[i];
+    const rowStr = row.join('\t');
+    
+    // Detect employee header row: contains "ID:" and "Name:"
+    if(rowStr.includes('ID:') && rowStr.includes('Name:')){
+      // Extract ID and Name
+      const idMatch = rowStr.match(/ID:\s*\t*(\S+)/);
+      const nameMatch = rowStr.match(/Name:\s*\t*([^\t]+?)\s*(?:\t|Dept)/);
+      const deptMatch = rowStr.match(/Dept\.?:\s*\t*([^\t]+)/);
+      
+      const dtrId = idMatch ? idMatch[1].trim() : '';
+      const dtrName = nameMatch ? nameMatch[1].trim() : '';
+      const dtrDept = deptMatch ? deptMatch[1].trim() : '';
+      
+      // Collect day punch rows (next rows until next ID: block or blank section)
+      // Each column after the label columns holds one day's punches concatenated
+      const dayPunches = Array.from({length:numDays}, ()=>'');
+      
+      i++;
+      // Collect rows that have time data (not ID rows)
+      while(i<rows.length){
+        const nr = rows[i];
+        const nrStr = nr.join('\t');
+        if(nrStr.includes('ID:') && nrStr.includes('Name:')) break;
+        
+        // Try to map columns to days
+        // In the xlsx the punches for day N are in column N-1 (0-indexed from col 0)
+        // Each cell may have multiple HH:MM concatenated
+        for(let col=0;col<Math.min(nr.length, numDays+2);col++){
+          const cell = String(nr[col]||'').trim();
+          if(!cell) continue;
+          // Check if cell contains time patterns
+          if(/\d{2}:\d{2}/.test(cell) && col < numDays){
+            dayPunches[col] = (dayPunches[col]+' '+cell).trim();
+          }
+        }
+        i++;
+      }
+      
+      // Compute hours per day
+      const days = [];
+      let totalWorked=0, totalLate=0;
+      const shiftStartMin = toMin(document.getElementById('dtr-shift-start').value||'09:00');
+      const stdHours = parseFloat(document.getElementById('dtr-std-hours').value)||8;
+      
+      for(let d=0;d<numDays;d++){
+        const punches = extractTimes(dayPunches[d]);
+        const {worked} = computeWorkedMinutes(punches);
+        
+        // Late calculation: first punch vs shift start
+        let lateMin = 0;
+        if(punches.length>0){
+          const firstIn = toMin(punches[0]);
+          if(firstIn!==null && firstIn > shiftStartMin){
+            lateMin = firstIn - shiftStartMin;
+          }
+        }
+        
+        const present = punches.length > 0;
+        if(present){
+          totalWorked += worked;
+          totalLate += lateMin;
+        }
+        days.push({d:d+1, punches, worked, lateMin, present});
+      }
+      
+      // Try to match employee by name or ID
+      const matchedEmp = matchEmployee(dtrId, dtrName);
+      
+      parsed.push({
+        dtrId, dtrName, dtrDept, days,
+        regHours: R(totalWorked/60, 2),
+        lateMin: totalLate,
+        matchedEmpId: matchedEmp ? matchedEmp.id : null,
+        matchedEmpName: matchedEmp ? matchedEmp.name : null
+      });
+      
+    } else {
+      i++;
+    }
+  }
+  
+  dtrData = parsed;
+  dtrPeriodLabel = document.getElementById('dtr-period-name').value || dateRangeStr;
+  
+  renderDTRTable();
+  document.getElementById('dtr-empty').style.display = 'none';
+  document.getElementById('dtr-summary-card').style.display = '';
+  document.getElementById('dtr-send-payroll-btn').style.display = '';
+  document.getElementById('dtr-period-badge').textContent = dtrPeriodLabel;
+  
+  const matched = parsed.filter(p=>p.matchedEmpId).length;
+  toast('DTR imported: '+parsed.length+' employees, '+matched+' matched');
+}
+
+// Match DTR employee to payroll employee by ID or name fuzzy
+function matchEmployee(dtrId, dtrName){
+  // Try ID match first
+  const byId = employees.find(e=>String(e.id)===String(dtrId));
+  if(byId) return byId;
+  
+  // Try name match (last name)
+  if(dtrName){
+    const dtrLast = dtrName.split(/[,\s]+/)[0].toLowerCase().replace(/[^a-z]/g,'');
+    const byName = employees.find(e=>{
+      const eLast = e.name.split(/[,\s]+/)[0].toLowerCase().replace(/[^a-z]/g,'');
+      return eLast === dtrLast || e.name.toLowerCase().includes(dtrName.toLowerCase()) || dtrName.toLowerCase().includes(eLast);
+    });
+    if(byName) return byName;
+  }
+  return null;
+}
+
+function renderDTRTable(){
+  const q = (document.getElementById('dtr-q')?.value||'').toLowerCase();
+  const fil = dtrData.filter(d=>(d.dtrName+d.dtrId+(d.matchedEmpName||'')).toLowerCase().includes(q));
+
+  const unmatched = dtrData.filter(d=>!d.matchedEmpId);
+  const warnEl = document.getElementById('dtr-unmatched-warn');
+  if(unmatched.length){
+    warnEl.style.display='';
+    warnEl.innerHTML='&#9888; <strong>'+unmatched.length+' unmatched record(s):</strong> '+unmatched.map(u=>'<span style="font-family:var(--mf)">'+u.dtrName+' (ID:'+u.dtrId+')</span>').join(', ')+'. These will be skipped when sending to payroll.';
+  } else {
+    warnEl.style.display='none';
+  }
+
+  document.getElementById('dtr-tbody').innerHTML = fil.map(function(d,idx){
+    const matched = d.matchedEmpId;
+    const daysPresent = d.days.filter(x=>x.present).length;
+    const matchBadge = matched
+      ? '<span style="background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">&#10003; '+(d.matchedEmpName||'')+'</span>'
+      : '<span style="background:var(--red-light);color:var(--red);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">&#10007; No match</span>';
+    return '<tr>'
+      +'<td><div style="font-weight:700;font-size:13px">'+d.dtrName+'</div>'
+      +'<div style="font-size:11px;color:var(--text-3);font-family:var(--mf)">DTR ID: '+d.dtrId+' &middot; '+d.dtrDept+'</div></td>'
+      +'<td>'+matchBadge+'</td>'
+      +'<td class="num" style="font-weight:700;color:var(--blue)">'+daysPresent+'d</td>'
+      +'<td class="num" style="font-weight:700;color:var(--ember)">'+d.regHours+'h</td>'
+      +'<td class="num" style="'+(d.lateMin>0?'color:var(--red)':'')+'">'+(d.lateMin>0?d.lateMin+' min':'\u2014')+'</td>'
+      +'<td><button class="btn bg bxs" onclick="showDTRDetail('+idx+')">&#128203; View</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function showDTRDetail(idx){
+  const d = dtrData[idx];
+  if(!d) return;
+  document.getElementById('dtr-detail-title').textContent = d.dtrName + ' \u2014 Daily Breakdown';
+
+  const rows = d.days.map(day=>{
+    if(!day.present) return '<tr style="opacity:.45"><td class="num" style="font-weight:700">Day '+day.d+'</td><td colspan="3" style="color:var(--text-4);font-style:italic">Absent / No record</td></tr>';
+    const pStr = day.punches.join(' \u2192 ') || '\u2014';
+    const wH = Math.floor(day.worked/60), wM = day.worked%60;
+    return '<tr>'
+      +'<td class="num" style="font-weight:700">Day '+day.d+'</td>'
+      +'<td style="font-family:var(--mf);font-size:12px">'+pStr+'</td>'
+      +'<td class="num">'+wH+'h '+wM+'m</td>'
+      +'<td class="num" style="'+(day.lateMin>0?'color:var(--red)':'')+'">'+(day.lateMin>0?day.lateMin+' min late':'On time')+'</td>'
+      +'</tr>';
+  });
+
+  const matchNote = d.matchedEmpId
+    ? '<div style="margin-top:14px;padding:10px 14px;background:var(--green-light);border-radius:8px;font-size:13px;color:var(--green);border:1px solid rgba(22,163,74,.2)">&#10003; Matched to payroll employee: <strong>'+d.matchedEmpName+'</strong></div>'
+    : '<div style="margin-top:14px;padding:10px 14px;background:var(--red-light);border-radius:8px;font-size:13px;color:var(--red);border:1px solid rgba(220,38,38,.2)">&#10007; No matching payroll employee found for DTR ID <strong>'+d.dtrId+'</strong> / Name <strong>'+d.dtrName+'</strong></div>';
+
+  document.getElementById('dtr-detail-body').innerHTML =
+    '<div style="margin-bottom:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px">'
+    +'<div style="background:var(--fire-light);border-radius:10px;padding:14px;border:1px solid var(--fire-mid)">'
+    +'<div style="font-size:10px;font-family:var(--mf);text-transform:uppercase;letter-spacing:.08em;color:var(--fire);margin-bottom:4px;font-weight:700">Total Reg. Hours</div>'
+    +'<div style="font-size:20px;font-weight:800;font-family:var(--mf);color:var(--fire)">'+d.regHours+'h</div></div>'
+    +'<div style="background:var(--red-light);border-radius:10px;padding:14px;border:1px solid rgba(220,38,38,.2)">'
+    +'<div style="font-size:10px;font-family:var(--mf);text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:4px;font-weight:700">Total Late</div>'
+    +'<div style="font-size:20px;font-weight:800;font-family:var(--mf);color:var(--red)">'+d.lateMin+' min</div></div>'
+    +'</div>'
+    +'<div style="overflow-x:auto"><table>'
+    +'<thead><tr><th>Day</th><th>Time Punches</th><th>Hours Worked</th><th>Late</th></tr></thead>'
+    +'<tbody>'+rows.join('')+'</tbody>'
+    +'</table></div>'
+    + matchNote;
+
+  document.getElementById('dtr-detail-modal').classList.add('open');
+}
+
+// Send DTR data to Run Payroll — pre-fills period and employee hours
+function sendDTRToPayroll(){
+  if(!dtrData.length){ toast('No DTR data to send','error'); return; }
+  
+  const periodName = document.getElementById('dtr-period-name').value.trim();
+  const fromVal    = document.getElementById('dtr-from').value;
+  const toVal      = document.getElementById('dtr-to').value;
+  
+  // Set payroll period fields
+  if(periodName) document.getElementById('pr-name').value = periodName;
+  if(fromVal)    document.getElementById('pr-from').value = fromVal;
+  if(toVal)      document.getElementById('pr-to').value   = toVal;
+  
+  // Store DTR data keyed by matched empId for payroll to pick up
+  window._dtrPayrollData = {};
+  dtrData.filter(d=>d.matchedEmpId).forEach(d=>{
+    window._dtrPayrollData[d.matchedEmpId] = {
+      rh: d.regHours,        // total regular hours
+      late: d.lateMin        // total late minutes
+    };
+  });
+  
+  toast('DTR sent to Run Payroll! Load employees to see pre-filled hours.');
+  nav('payroll');
+  
+  // Auto-load payroll sheet after a tick
+  setTimeout(()=>loadPayrollSheet(true), 300);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(function(){
+  const n = new Date();
+  const y = n.getFullYear();
+  const m = String(n.getMonth()+1).padStart(2,'0');
+  document.getElementById('pr-from').value = `${y}-${m}-01`;
+  const last = new Date(y, n.getMonth()+1, 0).getDate();
+  document.getElementById('pr-to').value = `${y}-${m}-${last}`;
+  document.getElementById('pr-name').value = new Date().toLocaleString('en-PH',{month:'short'})+' 1-'+last+', '+y;
+})();
+
+syncEmployeeAccounts();
+applyCompanySettings();
+if(currentUser){ startApp(); } else { document.body.classList.add('auth-locked'); }
+</script>
+</body>
+</html>

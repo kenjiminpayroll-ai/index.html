@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenji Min — Staff Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1923;
+  --ink3: #5a6a7a;
+  --ink4: #94a3b8;
+  --accent: #1e3a8a;
+  --accent2: #1e40af;
+  --gold: #b45309;
+  --paper: #f8f7f4;
+  --hf: 'DM Sans', sans-serif;
+  --sf: 'Noto Serif JP', serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #0f1923 0%, #1e3a8a 60%, #1e40af 100%);
+  font-family: var(--hf);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,.03) 60px, rgba(255,255,255,.03) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,.03) 60px, rgba(255,255,255,.03) 61px);
+  pointer-events: none;
+}
+
+.kamon {
+  position: absolute;
+  font-family: var(--sf);
+  color: rgba(255,255,255,.04);
+  font-size: 400px;
+  right: -80px;
+  bottom: -60px;
+  user-select: none;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+  animation: fadeUp .6s ease;
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+.emblem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.mon {
+  width: 72px; height: 72px;
+  background: rgba(255,255,255,.12);
+  border: 2px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--sf);
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+}
+
+.title {
+  font-family: var(--sf);
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 48px;
+  height: 2px;
+  background: rgba(255,255,255,.2);
+  margin: 28px auto;
+  border-radius: 2px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .cards { grid-template-columns: 1fr; }
+  .title { font-size: 22px; }
+}
+
+.card {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 20px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all .25s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.06), transparent);
+  opacity: 0;
+  transition: opacity .25s;
+  border-radius: inherit;
+}
+
+.card:hover {
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.28);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+
+.card:hover::after { opacity: 1; }
+
+.card-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: -.01em;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,.55);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.card-arrow {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: gap .2s, color .2s;
+}
+
+.card:hover .card-arrow {
+  gap: 10px;
+  color: #fff;
+}
+
+.card-arrow::after { content: '→'; }
+
+.card.admin { border-color: rgba(251,191,36,.25); }
+.card.admin:hover { border-color: rgba(251,191,36,.45); background: rgba(251,191,36,.08); }
+.card.admin .card-arrow { color: rgba(251,191,36,.7); }
+.card.admin:hover .card-arrow { color: rgb(251,191,36); }
+
+.footer {
+  margin-top: 40px;
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+  letter-spacing: .06em;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="kamon">家</div>
+
+<div class="wrap">
+  <div class="emblem">
+    <div class="mon">家</div>
+    <div class="title">Kenji Min</div>
+    <div class="subtitle">Staff Portal</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+    <a class="card" href="KenjiMin_Employee_Portal.html">
+      <span class="card-icon">👤</span>
+      <div class="card-title">Employee Portal</div>
+      <div class="card-desc">View your profile, payslips, earnings summary, and personal employment details.</div>
+      <div class="card-arrow">Open Portal</div>
+    </a>
+
+    <a class="card admin" href="KenjiMin_Payroll_System.html">
+      <span class="card-icon">🗂️</span>
+      <div class="card-title">Payroll System</div>
+      <div class="card-desc">Admin access — manage employees, run payroll, process DTR imports, and generate payslips.</div>
+      <div class="card-arrow">Open System</div>
+    </a>
+  </div>
+</div>
+
+<div class="footer">© Kenji Min · All rights reserved</div>
+
+</body>
+</html>

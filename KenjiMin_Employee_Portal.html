@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenji Min — Employee Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:       #0f1923;
+  --ink2:      #2c3e50;
+  --ink3:      #5a6a7a;
+  --ink4:      #94a3b8;
+  --paper:     #f8f7f4;
+  --paper2:    #f0ede8;
+  --paper3:    #e4dfd8;
+  --border:    #ddd8d0;
+  --accent:    #1e3a8a;
+  --accent2:   #1e40af;
+  --gold:      #b45309;
+  --gold-lt:   #fef3c7;
+  --gold-mid:  #fde68a;
+  --red:       #dc2626;
+  --red-lt:    #fef2f2;
+  --green:     #16a34a;
+  --green-lt:  #f0fdf4;
+  --r:         12px;
+  --r-lg:      18px;
+  --shadow-sm: 0 1px 4px rgba(15,25,35,.07);
+  --shadow:    0 4px 20px rgba(15,25,35,.1);
+  --shadow-lg: 0 16px 60px rgba(15,25,35,.16);
+  --hf: 'DM Sans', sans-serif;
+  --sf: 'Noto Serif JP', serif;
+  --mf: 'DM Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--hf);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── LOGIN ── */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #0f1923 0%, #1e3a8a 60%, #1e40af 100%);
+  position: relative;
+  overflow: hidden;
+}
+.login-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,.03) 60px, rgba(255,255,255,.03) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,.03) 60px, rgba(255,255,255,.03) 61px);
+}
+.login-kamon {
+  position: absolute;
+  font-family: var(--sf);
+  color: rgba(255,255,255,.04);
+  font-size: 320px;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+  line-height: 1;
+}
+.login-card {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 24px;
+  padding: 44px 40px;
+  width: 440px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+.login-emblem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.login-mon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-family: var(--sf);
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(30,58,138,.3);
+  flex-shrink: 0;
+}
+.login-brand { flex: 1; }
+.login-brand-t { font-family: var(--sf); font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: .01em; line-height: 1.2; }
+.login-brand-s { font-size: 11px; color: var(--ink4); letter-spacing: .05em; text-transform: uppercase; margin-top: 2px; }
+
+.login-h { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -.02em; margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: var(--ink3); margin-bottom: 28px; }
+
+.fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+input[type=text], input[type=password] {
+  background: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: var(--hf);
+  font-size: 14px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+}
+input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(30,58,138,.1); }
+
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-family: var(--hf);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 4px 14px rgba(30,58,138,.3);
+  letter-spacing: .01em;
+  margin-top: 4px;
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(30,58,138,.4); }
+.btn-login:active { transform: translateY(0); }
+
+.login-err {
+  display: none;
+  background: var(--red-lt);
+  border: 1px solid rgba(220,38,38,.25);
+  color: var(--red);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.login-hint { font-size: 11px; color: var(--ink4); margin-top: 14px; line-height: 1.7; }
+
+/* ── APP SHELL ── */
+.app { display: none; min-height: 100vh; }
+.app.visible { display: flex; flex-direction: column; }
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #0f1923, #1e3a8a);
+  color: #fff;
+  padding: 0 32px;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,.25);
+}
+.header-brand { display: flex; align-items: center; gap: 14px; }
+.header-mon {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,.15);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--sf);
+  font-size: 17px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.2);
+}
+.header-text {}
+.header-title { font-family: var(--sf); font-size: 15px; font-weight: 700; letter-spacing: .02em; line-height: 1.2; }
+.header-sub { font-size: 11px; color: rgba(255,255,255,.5); letter-spacing: .05em; text-transform: uppercase; }
+
+.header-right { display: flex; align-items: center; gap: 14px; }
+.emp-chip {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,.9);
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-logout {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: var(--hf);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-logout:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+/* ── NAV TABS ── */
+.nav-bar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.nav-tab {
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 7px;
+  user-select: none;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--ink); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-tab .nt-dot {
+  width: 18px; height: 18px;
+  background: var(--gold-lt);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.nav-tab.active .nt-dot { background: rgba(30,58,138,.1); }
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 32px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── PAGE HEADER ── */
+.ph { margin-bottom: 24px; }
+.ph-title { font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+.ph-sub { font-size: 13px; color: var(--ink3); margin-top: 3px; }
+
+/* ── CARDS ── */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.card-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--ink4);
+  margin-bottom: 16px;
+  font-family: var(--mf);
+}
+
+/* ── DASHBOARD HERO ── */
+.dash-hero {
+  background: linear-gradient(135deg, #0f1923, #1e3a8a, #1e40af);
+  border-radius: 20px;
+  padding: 32px;
+  color: #fff;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-hero::before {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 280px; height: 280px;
+  border: 60px solid rgba(255,255,255,.05);
+  border-radius: 50%;
+}
+.dash-hero::after {
+  content: '';
+  position: absolute;
+  right: 80px; bottom: -60px;
+  width: 160px; height: 160px;
+  border: 40px solid rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.hero-greeting {
+  font-size: 13px;
+  color: rgba(255,255,255,.6);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hero-name {
+  font-family: var(--sf);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.hero-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.hero-badge {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.hero-badge strong { color: #fff; }
+.hero-badge span { color: rgba(255,255,255,.6); }
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.stat {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.stat::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 0 0 var(--r) var(--r);
+}
+.stat.blue::after  { background: linear-gradient(90deg, #1e3a8a, #3b82f6); }
+.stat.gold::after  { background: linear-gradient(90deg, #b45309, #f59e0b); }
+.stat.green::after { background: linear-gradient(90deg, #16a34a, #4ade80); }
+.stat.red::after   { background: linear-gradient(90deg, #dc2626, #f87171); }
+.stat-l { font-size: 12px; color: var(--ink3); margin-bottom: 8px; font-weight: 500; }
+.stat-v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+.stat.blue  .stat-v { color: var(--accent); }
+.stat.gold  .stat-v { color: var(--gold); }
+.stat.green .stat-v { color: var(--green); }
+.stat.red   .stat-v { color: var(--red); }
+.stat-s { font-size: 11px; color: var(--ink4); }
+
+/* ── TABLE ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 10px;
+  font-family: var(--mf);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink4);
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--paper);
+}
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:hover { background: rgba(30,58,138,.03); }
+tbody tr:last-child { border-bottom: none; }
+tbody td { padding: 13px 14px; vertical-align: middle; }
+.num { font-family: var(--mf); }
+
+/* ── PAYSLIP CARD ── */
+.slip-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.slip-row:last-child { border-bottom: none; }
+.slip-period { font-size: 14px; font-weight: 700; color: var(--ink); }
+.slip-meta { font-size: 12px; color: var(--ink4); margin-top: 2px; }
+.slip-amounts { display: flex; gap: 16px; align-items: center; justify-content: flex-end; }
+.slip-net { font-family: var(--mf); font-size: 18px; font-weight: 700; color: var(--green); }
+.slip-gross { font-family: var(--mf); font-size: 12px; color: var(--ink4); }
+.btn-view {
+  background: rgba(30,58,138,.07);
+  border: 1px solid rgba(30,58,138,.2);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: var(--hf);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-view:hover { background: rgba(30,58,138,.14); }
+
+/* ── PROFILE ── */
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.info-block { display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; align-items: baseline; border-bottom: 1px solid var(--paper2); padding-bottom: 12px; }
+.info-row:last-child { border-bottom: none; }
+.ir-label { font-size: 11px; color: var(--ink4); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.ir-val { font-size: 14px; font-weight: 600; color: var(--ink); font-family: var(--mf); }
+.ir-val.plain { font-family: var(--hf); }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+}
+.sp-active { background: var(--green-lt); color: var(--green); border: 1px solid rgba(22,163,74,.25); }
+.sp-inactive { background: var(--red-lt); color: var(--red); border: 1px solid rgba(220,38,38,.25); }
+
+/* ── PAYSLIP MODAL ── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(15,25,35,.55);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+  backdrop-filter: blur(6px);
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 700px;
+  max-width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform .25s;
+  box-shadow: var(--shadow-lg);
+}
+.modal-bg.open .modal { transform: translateY(0); }
+.modal-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: #fff; z-index: 5;
+}
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close {
+  width: 30px; height: 30px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--ink3);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.modal-close:hover { background: var(--paper2); color: var(--ink); }
+.modal-body { padding: 26px; }
+.modal-foot {
+  padding: 16px 26px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+  position: sticky; bottom: 0; background: #fff;
+}
+.btn-print {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 20px;
+  font-family: var(--hf);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(30,58,138,.25);
+  transition: all .15s;
+}
+.btn-print:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,58,138,.35); }
+.btn-cancel {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-family: var(--hf);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-cancel:hover { background: var(--paper2); }
+
+/* ── PAYSLIP PRINT TEMPLATE ── */
+.ps-wrap {
+  font-family: var(--hf);
+  color: var(--ink);
+}
+.ps-band {
+  background: linear-gradient(135deg, #0f1923, #1e3a8a);
+  color: #fff;
+  padding: 24px 28px;
+  border-radius: 12px 12px 0 0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin: -26px -26px 24px;
+}
+.ps-co { font-family: var(--sf); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.ps-addr { font-size: 11px; opacity: .7; }
+.ps-period-label { font-size: 10px; opacity: .6; text-transform: uppercase; letter-spacing: .1em; }
+.ps-period-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+.ps-gen { font-size: 10px; opacity: .55; margin-top: 4px; }
+
+.ps-info {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.ps-field label { display: block; font-size: 10px; color: var(--ink4); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; font-weight: 600; }
+.ps-field span { font-size: 13px; font-weight: 600; }
+
+.ps-sec-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 16px 0 10px;
+  font-family: var(--mf);
+  display: flex; align-items: center; gap: 8px;
+}
+.ps-sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.ps-line {
+  display: flex; justify-content: space-between;
+  padding: 7px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--paper2);
+}
+.ps-line:last-child { border-bottom: none; }
+.ps-line .lbl { color: var(--ink2); }
+.ps-line .amt { font-family: var(--mf); font-weight: 600; }
+
+.ps-subtotal {
+  display: flex; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--paper);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+.ps-net {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #0f1923, #1e3a8a);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 20px;
+  margin-top: 16px;
+}
+.ps-sig { display: flex; justify-content: space-between; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border); }
+.ps-sig-line { border-top: 2px solid var(--paper3); padding-top: 6px; font-size: 11px; color: var(--ink4); width: 140px; text-align: center; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 52px 24px; color: var(--ink3); }
+.empty-icon { font-size: 44px; margin-bottom: 14px; }
+.empty-title { font-size: 15px; font-weight: 700; color: var(--ink2); margin-bottom: 5px; }
+.empty-sub { font-size: 13px; }
+
+/* ── ANNOUNCEMENT / NOTICE CARD ── */
+.notice {
+  background: var(--gold-lt);
+  border: 1px solid var(--gold-mid);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 20px;
+}
+.notice-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.notice-t { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.notice-b { font-size: 13px; color: var(--ink2); }
+
+/* ── SUMMARY ROW ── */
+.sum-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.sum-row:last-child { border-bottom: none; }
+.sum-row .sr-label { color: var(--ink2); font-weight: 500; }
+.sum-row .sr-val { font-family: var(--mf); font-weight: 600; }
+.sum-row.total { font-size: 15px; font-weight: 800; border-top: 2px solid var(--border); margin-top: 4px; }
+
+/* ── PRINT ── */
+@media print {
+  body > *:not(.modal-bg) { display: none !important; }
+  .modal-bg { position: static; background: none; backdrop-filter: none; padding: 0; opacity: 1; pointer-events: all; }
+  .modal { box-shadow: none; width: 100%; max-height: none; border-radius: 0; transform: none; }
+  .modal-hd, .modal-foot { display: none !important; }
+  .modal-body { padding: 0; }
+  .ps-band { border-radius: 0; margin: 0 0 24px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+
+/* ── TOAST ── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  animation: slideIn .25s ease;
+  min-width: 240px;
+  box-shadow: var(--shadow);
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+@keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 720px) {
+  .content { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .profile-grid { grid-template-columns: 1fr; }
+  .hero-name { font-size: 22px; }
+  .nav-tab { padding: 12px 12px; font-size: 12px; }
+  .header { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-wrap" id="login-screen">
+  <div class="login-kamon">剣</div>
+  <div class="login-card">
+    <div class="login-emblem">
+      <div class="login-mon">剣</div>
+      <div class="login-brand">
+        <div class="login-brand-t">Kenji Min Japanese Training Center</div>
+        <div class="login-brand-s">Employee Self-Service Portal</div>
+      </div>
+    </div>
+    <div class="login-h">Welcome Back</div>
+    <div class="login-sub">Sign in with your Employee ID and password to access your portal.</div>
+    <div class="login-err" id="login-err">Incorrect Employee ID or password. Please try again.</div>
+    <div class="fg"><label>Employee ID</label><input type="text" id="li-id" placeholder="e.g. KJTC-0005" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="fg"><label>Password</label><input type="password" id="li-pw" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <div class="login-hint">⚠️ Your default password is your Employee ID. Contact your administrator if you have trouble logging in.</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div class="app" id="app">
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-mon">剣</div>
+      <div class="header-text">
+        <div class="header-title">Kenji Min JTC</div>
+        <div class="header-sub">Employee Portal</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="emp-chip">👤 <span id="header-name">—</span></div>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <nav class="nav-bar">
+    <div class="nav-tab active" id="tab-dashboard" onclick="showPage('dashboard')">
+      <span>▦</span> Dashboard
+    </div>
+    <div class="nav-tab" id="tab-payslips" onclick="showPage('payslips')">
+      <span>🧾</span> My Payslips
+    </div>
+    <div class="nav-tab" id="tab-profile" onclick="showPage('profile')">
+      <span>👤</span> My Profile
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-hero">
+        <div class="hero-greeting">Good day,</div>
+        <div class="hero-name" id="dash-name">—</div>
+        <div class="hero-meta" id="dash-meta"></div>
+      </div>
+
+      <div class="notice" id="dash-notice" style="display:none">
+        <div class="notice-icon">📢</div>
+        <div>
+          <div class="notice-t">Payslip Available</div>
+          <div class="notice-b" id="dash-notice-text"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="dash-stats"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Recent Payslips</div>
+          <div id="dash-recent-slips"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Pay Summary</div>
+          <div id="dash-pay-summary"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYSLIPS PAGE -->
+    <div class="page" id="page-payslips">
+      <div class="ph">
+        <div class="ph-title">My Payslips</div>
+        <div class="ph-sub">View and download your salary payslips</div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div id="payslips-list" style="padding:8px 24px"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="ph">
+        <div class="ph-title">My Profile</div>
+        <div class="ph-sub">Your employment information on record</div>
+      </div>
+      <div class="profile-grid">
+        <div class="card">
+          <div class="card-title">Personal Information</div>
+          <div class="info-block" id="profile-personal"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Employment Details</div>
+          <div class="info-block" id="profile-employment"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Government IDs</div>
+          <div class="info-block" id="profile-govids"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Compensation</div>
+          <div class="info-block" id="profile-comp"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PAYSLIP VIEW MODAL -->
+<div class="modal-bg" id="slip-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">📄 Payslip</div>
+      <button class="modal-close" onclick="closeSlip()">✕</button>
+    </div>
+    <div class="modal-body" id="slip-modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeSlip()">Close</button>
+      <button class="btn-print" onclick="window.print()">🖨 Print Payslip</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ── DATA ACCESS (reads from same localStorage as Payroll System) ──────────────
+const KEYS = { emp:'kjm_emp', slips:'kjm_slips', auth:'kjm_auth', settings:'kjm_settings', session:'kjm_portal_session' };
+
+function getData(key){ return JSON.parse(localStorage.getItem(key)||'null'); }
+
+let employees = [];
+let payslips  = [];
+let auth      = {};
+let appSettings = { companyName:'KENJI MIN JAPANESE TRAINING CENTER INC.', address:'Dasmariñas, Cavite' };
+let currentEmp  = null;
+
+function loadData(){
+  employees   = getData(KEYS.emp)    || [];
+  payslips    = getData(KEYS.slips)  || [];
+  auth        = getData(KEYS.auth)   || { adminPassword:'admin123', employeePasswords:{} };
+  const s     = getData(KEYS.settings);
+  if(s) appSettings = s;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+const R   = (n,d=2) => Math.round(n*(10**d))/(10**d);
+const N   = v => parseFloat(v)||0;
+const fmt = n => N(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const empLoginId = e => (e.eid||e.id||'').toString().trim();
+
+function toast(msg, type='success'){
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span> ${msg}`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function doLogin(){
+  loadData();
+  const id   = document.getElementById('li-id').value.trim();
+  const pass = document.getElementById('li-pw').value;
+  const errEl = document.getElementById('login-err');
+
+  const emp = employees.find(e => empLoginId(e) === id);
+  if(!emp){ errEl.style.display='block'; return; }
+
+  const storedPass = (auth.employeePasswords||{})[empLoginId(emp)];
+  const defaultPass = empLoginId(emp);
+  const correct = pass === (storedPass||defaultPass);
+  if(!correct){ errEl.style.display='block'; return; }
+
+  currentEmp = emp;
+  sessionStorage.setItem(KEYS.session, JSON.stringify({ empId: emp.id, loginId: empLoginId(emp) }));
+
+  errEl.style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+
+function doLogout(){
+  sessionStorage.removeItem(KEYS.session);
+  currentEmp = null;
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('li-pw').value = '';
+}
+
+function tryAutoLogin(){
+  const sess = JSON.parse(sessionStorage.getItem(KEYS.session)||'null');
+  if(!sess) return false;
+  loadData();
+  const emp = employees.find(e => String(e.id) === String(sess.empId));
+  if(!emp) return false;
+  currentEmp = emp;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+  return true;
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='dashboard') renderDashboard();
+  if(name==='payslips')  renderPayslips();
+  if(name==='profile')   renderProfile();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+function initApp(){
+  loadData();
+  // Re-fetch currentEmp from fresh data
+  currentEmp = employees.find(e=>String(e.id)===String(currentEmp.id)) || currentEmp;
+
+  document.getElementById('header-name').textContent = currentEmp.name;
+  showPage('dashboard');
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const emp = currentEmp;
+  const mySlips = payslips.filter(s=>String(s.empId)===String(emp.id));
+  const totalNet = mySlips.reduce((s,p)=>s+N(p.netPay),0);
+  const totalGross = mySlips.reduce((s,p)=>s+N(p.totalGross),0);
+
+  // Greeting
+  const h = new Date().getHours();
+  const greet = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('dash-name').textContent = formatName(emp.name);
+  document.getElementById('dash-meta').innerHTML = `
+    <div class="hero-badge"><span>Position </span><strong>${emp.pos||'—'}</strong></div>
+    <div class="hero-badge"><span>ID </span><strong>${empLoginId(emp)||'—'}</strong></div>
+    <div class="hero-badge"><span>Status </span><strong>${emp.status==='active'?'● Active':'○ Inactive'}</strong></div>
+  `;
+
+  // Latest payslip notice
+  if(mySlips.length){
+    const latest = [...mySlips].sort((a,b)=>new Date(b.generatedAt)-new Date(a.generatedAt))[0];
+    document.getElementById('dash-notice').style.display = '';
+    document.getElementById('dash-notice-text').innerHTML =
+      `Your latest payslip for <strong>${latest.period}</strong> is ready — Net Pay: <strong>₱${fmt(latest.netPay)}</strong>. <a href="#" onclick="showPage('payslips');return false" style="color:var(--gold);text-decoration:none;font-weight:700">View Payslips →</a>`;
+  }
+
+  // Stats
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat blue">
+      <div class="stat-l">Payslips Generated</div>
+      <div class="stat-v">${mySlips.length}</div>
+      <div class="stat-s">All time</div>
+    </div>
+    <div class="stat green">
+      <div class="stat-l">Total Net Earned</div>
+      <div class="stat-v" style="font-size:17px">₱${mySlips.length?fmt(totalNet):'0.00'}</div>
+      <div class="stat-s">Cumulative take-home</div>
+    </div>
+    <div class="stat gold">
+      <div class="stat-l">Total Gross Earned</div>
+      <div class="stat-v" style="font-size:17px">₱${mySlips.length?fmt(totalGross):'0.00'}</div>
+      <div class="stat-s">Before deductions</div>
+    </div>
+    <div class="stat blue">
+      <div class="stat-l">Daily Rate</div>
+      <div class="stat-v" style="font-size:17px">₱${fmt(emp.rate||0)}</div>
+      <div class="stat-s">Current rate on record</div>
+    </div>
+  `;
+
+  // Recent slips
+  const recent = [...mySlips].sort((a,b)=>new Date(b.generatedAt)-new Date(a.generatedAt)).slice(0,5);
+  document.getElementById('dash-recent-slips').innerHTML = recent.length
+    ? recent.map(s=>`
+      <div class="slip-row">
+        <div>
+          <div class="slip-period">${s.period}</div>
+          <div class="slip-meta">Generated ${new Date(s.generatedAt).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'})}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="text-align:right">
+            <div class="slip-net">₱${fmt(s.netPay)}</div>
+            <div class="slip-gross">Gross ₱${fmt(s.totalGross)}</div>
+          </div>
+          <button class="btn-view" onclick="viewSlip('${s.id}')">View</button>
+        </div>
+      </div>
+    `).join('')
+    : `<div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">No payslips yet</div><div class="empty-sub">Your payslips will appear here once admin runs payroll.</div></div>`;
+
+  // Pay summary
+  const totalDed = mySlips.reduce((s,p)=>s+N(p.totalDed),0);
+  const totalOT  = mySlips.reduce((s,p)=>s+N(p.totalOT),0);
+  const totalAllow = mySlips.reduce((s,p)=>s+N(p.totalAllow),0);
+  document.getElementById('dash-pay-summary').innerHTML = mySlips.length ? `
+    <div class="sum-row"><span class="sr-label">Total Gross Pay</span><span class="sr-val">₱${fmt(totalGross)}</span></div>
+    <div class="sum-row"><span class="sr-label">Total Overtime / Premium</span><span class="sr-val" style="color:var(--accent)">₱${fmt(totalOT)}</span></div>
+    <div class="sum-row"><span class="sr-label">Total Allowances</span><span class="sr-val" style="color:var(--gold)">₱${fmt(totalAllow)}</span></div>
+    <div class="sum-row"><span class="sr-label">Total Deductions</span><span class="sr-val" style="color:var(--red)">-₱${fmt(totalDed)}</span></div>
+    <div class="sum-row total"><span class="sr-label">Total Net Pay</span><span class="sr-val" style="color:var(--green)">₱${fmt(totalNet)}</span></div>
+  ` : `<div class="empty"><div class="empty-icon">📊</div><div class="empty-sub">Summary will appear once payslips are generated.</div></div>`;
+}
+
+// ── PAYSLIPS ─────────────────────────────────────────────────────────────────
+function renderPayslips(){
+  const mySlips = payslips
+    .filter(s=>String(s.empId)===String(currentEmp.id))
+    .sort((a,b)=>new Date(b.generatedAt)-new Date(a.generatedAt));
+
+  if(!mySlips.length){
+    document.getElementById('payslips-list').innerHTML =
+      `<div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">No payslips yet</div><div class="empty-sub">Your payslips will appear here once the administrator runs payroll for your account.</div></div>`;
+    return;
+  }
+
+  document.getElementById('payslips-list').innerHTML = mySlips.map(s=>`
+    <div class="slip-row">
+      <div>
+        <div class="slip-period">${s.period}</div>
+        <div class="slip-meta">
+          Generated ${new Date(s.generatedAt).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}
+          &nbsp;·&nbsp; Days: ${R(N(s.rh)/8,2)}
+          &nbsp;·&nbsp; Gross ₱${fmt(s.totalGross)}
+          &nbsp;·&nbsp; Deductions -₱${fmt(s.totalDed)}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="text-align:right">
+          <div class="slip-net">₱${fmt(s.netPay)}</div>
+          <div class="slip-gross">Net Pay</div>
+        </div>
+        <button class="btn-view" onclick="viewSlip('${s.id}')">📄 View</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── PROFILE ──────────────────────────────────────────────────────────────────
+function renderProfile(){
+  const e = currentEmp;
+  document.getElementById('profile-personal').innerHTML = `
+    <div class="info-row"><span class="ir-label">Full Name</span><span class="ir-val plain">${e.name||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">Employee ID</span><span class="ir-val">${empLoginId(e)||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">Status</span><span class="ir-val plain"><span class="status-pill ${e.status==='active'?'sp-active':'sp-inactive'}">● ${e.status==='active'?'Active':'Inactive'}</span></span></div>
+    <div class="info-row"><span class="ir-label">Date Hired</span><span class="ir-val plain">${e.hired||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">Deployed To</span><span class="ir-val plain">${e.deploy||'KENJI MIN'}</span></div>
+  `;
+  document.getElementById('profile-employment').innerHTML = `
+    <div class="info-row"><span class="ir-label">Position</span><span class="ir-val plain">${e.pos||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">Department</span><span class="ir-val plain">${e.dept||'—'}</span></div>
+  `;
+  document.getElementById('profile-govids').innerHTML = `
+    <div class="info-row"><span class="ir-label">SSS No.</span><span class="ir-val">${e.sss||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">PhilHealth</span><span class="ir-val">${e.ph||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">Pag-IBIG</span><span class="ir-val">${e.hdmf||'—'}</span></div>
+    <div class="info-row"><span class="ir-label">TIN</span><span class="ir-val">${e.tin||'—'}</span></div>
+  `;
+  document.getElementById('profile-comp').innerHTML = `
+    <div class="info-row"><span class="ir-label">Daily Rate</span><span class="ir-val" style="color:var(--gold)">₱${fmt(e.rate||0)}</span></div>
+    <div class="info-row"><span class="ir-label">Transpo Allow.</span><span class="ir-val">₱${fmt(e.transpo||0)}/mo</span></div>
+    <div class="info-row"><span class="ir-label">Total Payslips</span><span class="ir-val plain">${payslips.filter(s=>String(s.empId)===String(e.id)).length}</span></div>
+  `;
+}
+
+// ── VIEW PAYSLIP ─────────────────────────────────────────────────────────────
+function viewSlip(id){
+  const s = payslips.find(p=>String(p.id)===String(id));
+  if(!s){ toast('Payslip not found','error'); return; }
+  if(String(s.empId)!==String(currentEmp.id)){ toast('Access denied','error'); return; }
+
+  const earningsRows = [];
+  if(s.basic)   earningsRows.push(['Basic Pay',               s.basic]);
+  if(s.ot)      earningsRows.push(['Overtime Pay (×1.25)',    s.ot]);
+  if(s.rd)      earningsRows.push(['Rest Day (×1.30)',        s.rd]);
+  if(s.rdot)    earningsRows.push(['Rest Day OT (×1.69)',     s.rdot]);
+  if(s.lh)      earningsRows.push(['Legal Holiday (×1.0)',    s.lh]);
+  if(s.lhot)    earningsRows.push(['LH Overtime (×2.6)',      s.lhot]);
+  if(s.lhrd)    earningsRows.push(['LH Rest Day (×2.6)',      s.lhrd]);
+  if(s.lhrdot)  earningsRows.push(['LH RD OT (×3.38)',        s.lhrdot]);
+  if(s.sh)      earningsRows.push(['Special Holiday (×1.30)', s.sh]);
+  if(s.shot)    earningsRows.push(['SH Overtime (×1.69)',     s.shot]);
+  if(s.shrd)    earningsRows.push(['SH Rest Day (×1.50)',     s.shrd]);
+  if(s.dh)      earningsRows.push(['Double Holiday (×3.0)',   s.dh]);
+  if(s.dhot)    earningsRows.push(['DH Overtime (×3.9)',      s.dhot]);
+  if(s.ta)      earningsRows.push(['Transportation Allow.',   s.ta]);
+  if(s.adj)     earningsRows.push(['Adjustment / Others',     s.adj]);
+  if(N(s.prev)>0) earningsRows.push(['Carry-over (1st Period)', s.prev]);
+
+  const dedRows = [];
+  if(s.sss)      dedRows.push(['SSS Contribution',  s.sss]);
+  if(s.phic)     dedRows.push(['PhilHealth (PHIC)',  s.phic]);
+  if(s.hdmf)     dedRows.push(['Pag-IBIG (HDMF)',   s.hdmf]);
+  if(s.sssloan)  dedRows.push(['SSS Loan',           s.sssloan]);
+  if(s.otherDed) dedRows.push(['Other Deductions',   s.otherDed]);
+
+  document.getElementById('slip-modal-body').innerHTML = `
+    <div class="ps-wrap">
+      <div class="ps-band">
+        <div>
+          <div class="ps-co">🎌 ${appSettings.companyName}</div>
+          <div class="ps-addr">${appSettings.address}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="ps-period-label">Pay Slip</div>
+          <div class="ps-period-val">${s.period}</div>
+          <div class="ps-gen">Generated: ${new Date(s.generatedAt).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
+        </div>
+      </div>
+
+      <div class="ps-info">
+        <div class="ps-field"><label>Employee Name</label><span>${s.empName}</span></div>
+        <div class="ps-field"><label>Employee No.</label><span style="font-family:var(--mf)">${s.eid||'—'}</span></div>
+        <div class="ps-field"><label>Position</label><span>${s.pos}</span></div>
+        <div class="ps-field"><label>Department</label><span>${s.dept}</span></div>
+        <div class="ps-field"><label>Daily Rate</label><span style="font-family:var(--mf);color:var(--gold)">₱${fmt(s.rate)}</span></div>
+        <div class="ps-field"><label>Days Worked</label><span style="font-family:var(--mf)">${R(N(s.rh)/8,2)} days</span></div>
+        <div class="ps-field"><label>SSS No.</label><span style="font-family:var(--mf)">${s.sssNo||'—'}</span></div>
+        <div class="ps-field"><label>PhilHealth No.</label><span style="font-family:var(--mf)">${s.phNo||'—'}</span></div>
+        <div class="ps-field"><label>Pag-IBIG No.</label><span style="font-family:var(--mf)">${s.hdmfNo||'—'}</span></div>
+        <div class="ps-field"><label>TIN</label><span style="font-family:var(--mf)">${s.tin||'—'}</span></div>
+        <div class="ps-field"><label>Date Hired</label><span>${s.hired||'—'}</span></div>
+        <div class="ps-field"><label>Deployed To</label><span>${s.deploy||'KENJI MIN'}</span></div>
+      </div>
+
+      <div class="ps-sec-title">Earnings</div>
+      ${earningsRows.map(r=>`<div class="ps-line"><span class="lbl">${r[0]}</span><span class="amt" style="color:var(--ink2)">₱${fmt(r[1])}</span></div>`).join('')}
+
+      <div class="ps-subtotal">
+        <span>Total Gross Pay</span>
+        <span style="font-family:var(--mf);color:var(--gold)">₱${fmt(s.totalGross)}</span>
+      </div>
+
+      <div class="ps-sec-title">Deductions</div>
+      ${dedRows.length ? dedRows.map(r=>`<div class="ps-line"><span class="lbl">${r[0]}</span><span class="amt" style="color:var(--red)">-₱${fmt(r[1])}</span></div>`).join('') : '<div style="color:var(--ink4);font-size:13px;padding:8px 0">No deductions this period.</div>'}
+
+      <div class="ps-subtotal">
+        <span>Total Deductions</span>
+        <span style="font-family:var(--mf);color:var(--red)">-₱${fmt(s.totalDed)}</span>
+      </div>
+
+      <div class="ps-net">
+        <span>NET PAY</span>
+        <span style="font-family:var(--mf)">₱${fmt(s.netPay)}</span>
+      </div>
+
+      <div class="ps-sig">
+        <div class="ps-sig-line">Employee Signature</div>
+        <div class="ps-sig-line">Authorized By</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('slip-modal').classList.add('open');
+}
+
+function closeSlip(){ document.getElementById('slip-modal').classList.remove('open'); }
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function formatName(n){
+  if(!n) return '—';
+  // Convert "LASTNAME, FIRSTNAME" → "Firstname Lastname"
+  const parts = n.split(',');
+  if(parts.length>=2){
+    const last  = parts[0].trim();
+    const first = parts[1].trim();
+    const cap   = s => s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
+    return cap(first)+' '+cap(last);
+  }
+  return n.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+}
+
+// Close modal on backdrop click
+document.getElementById('slip-modal').addEventListener('click', function(e){
+  if(e.target===this) closeSlip();
+});
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+if(!tryAutoLogin()){
+  document.getElementById('login-screen').style.display = '';
+}
+</script>
+</body>
+</html>
